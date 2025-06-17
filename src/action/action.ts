@@ -63,3 +63,9 @@ export const SignInCredentials = async (_prevState: unknown, formData: FormData)
         throw error
     }
 }
+
+// google sign in
+
+export const SignInGoogleAction = async () => {
+    await signIn("google", { redirectTo: '/' });
+}

@@ -5,7 +5,6 @@ import {
     CardAction,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
@@ -18,6 +17,8 @@ import { toast } from "sonner"
 import { useActionState } from "react"
 import { useEffect } from "react"
 import AuthButton from "@/components/ui/auth-button";
+import {Separator} from "@/components/ui/separator";
+import {GoogleSignInButton} from "@/components/ui/social-buttons";
 
 export default function RegisterCard() {
     const [state, formAction] = useActionState(RegisterCredentials, null)
@@ -50,7 +51,7 @@ export default function RegisterCard() {
 
             <CardContent>
                 <form action={formAction}>
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-6 mb-6">
                         <div className="grid gap-2">
                             <Label htmlFor="username">Username</Label>
                             <Input
@@ -101,15 +102,12 @@ export default function RegisterCard() {
                             />
                         </div>
                     </div>
-
-                    <CardFooter className="flex-col gap-2 mt-6 px-0">
-
-                        <AuthButton text={"Daftar Akun Baru"} />
-                        <Button variant="outline" className="w-full cursor-pointer">
-                            Lanjutkan dengan Google
-                        </Button>
-                    </CardFooter>
+                    <AuthButton text={"Daftar akun baru"}/>
                 </form>
+                <div className="mt-6 space-y-6">
+                    <Separator/>
+                    <GoogleSignInButton title="Lanjutkan dengan Google"/>
+                </div>
             </CardContent>
         </Card>
     )
