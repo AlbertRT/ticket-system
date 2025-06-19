@@ -14,7 +14,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="px-[128px] max-w-7xl mx-auto flex gap-5">
+        <div className="max-w-[1400] mx-auto flex gap-5">
             <UserSidebar />
             {children}
         </div>

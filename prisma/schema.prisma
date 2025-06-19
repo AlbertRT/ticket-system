@@ -32,6 +32,8 @@ model User {
     emailVerified DateTime? @map("email_verified")
     image         String?
     role          Role      @default(USER)
+    date_of_birth DateTime? @map("tanggal_lahir")
+    phone_number  String?   @map("nomor_telepon")
     password      String?
     session_token String?
     user_agent    String?
@@ -47,6 +49,7 @@ model User {
     bookings         CustomersBooking[]
     paymentHistories PaymentHistory[]
     organizedEvents  Event[]             @relation("EventOrganizer")
+    credentials      Credential[]
 }
 
 model Account {
@@ -273,4 +276,18 @@ model PaymentMerchant {
 
     paymentMethods PaymentMethod[]
     histories      PaymentHistory[]
+}
+
+model Credential {
+    id           String    @id @default(cuid())
+    user         User      @relation(fields: [userId], references: [id])
+    userId       String    @unique
+    credentialID String    @unique
+    publicKey    String
+    counter      Int
+    challenge    String
+    transports   String?
+    lastUsedAt   DateTime?
+    deviceName   String?
+    createdAt    DateTime  @default(now())
 }

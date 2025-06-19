@@ -4,7 +4,6 @@ import "@/style/globals.css";
 import TopNav from "@/components/ui/top-nav";
 import {Toaster} from "@/components/ui/sonner";
 import { auth } from "@/auth";
-import {syncDeviceInfo} from "@/action/syncDeviceInfo";
 import {SyncDeviceInfo} from "@/components/SyncDeviceInfo";
 
 const geistSans = Geist({
@@ -40,7 +39,7 @@ export default async function RootLayout({
         <TopNav />
         <main className="p-10 w-full">
             {children}
-            <Toaster position={"top-center"} richColors={true} />
+            <Toaster position={"top-right"} richColors={true} closeButton />
 
             {accessToken && <SyncDeviceInfo access_token={accessToken} user_id={userId as string} />}
         </main>

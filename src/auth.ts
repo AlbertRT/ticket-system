@@ -5,6 +5,8 @@ import Credentials from "@auth/core/providers/credentials";
 import {SignInSchema} from "@/lib/zod";
 import {compareSync} from "bcrypt-ts";
 import Google from "@auth/core/providers/google";
+import { verifyBiometricLogin } from "./action/verifyBiometricLogin";
+import { isoBase64URL } from "@simplewebauthn/server/helpers";
 export const { handlers, auth, signIn, signOut } = NextAuth({
 	adapter: PrismaAdapter(prisma),
 	session: { strategy: "jwt" },
@@ -49,22 +51,90 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 			name: "Device Login",
 			credentials: {
 				device_id: {},
-				device_token: {}
+				device_token: {},
 			},
 			authorize: async (credentials) => {
-				const { device_id, device_token } = credentials ?? {}
-				if (!device_token || !device_id) return null
+				const { device_id, device_token } = credentials ?? {};
+				if (!device_token || !device_id) return null;
 
 				const device = await prisma.userDevice.findUnique({
-					where: { id: device_id },
-					include: { user: true }
-				})
+					where: { id: device_id as string },
+					include: { user: true },
+				});
 
-				if (!device || device.device_token !== device_token) return null
+				if (!device || device.device_token !== device_token)
+					return null;
 
-				return device.user
-			}
-		})
+				return device.user;
+			},
+		}),
+		Credentials({
+			id: "biometric-login",
+			name: "Biometric Login",
+			credentials: {
+				credential_id: {},
+				response: {},
+			},
+			authorize: async (credentials) => {
+				const { credential_id, response } = credentials ?? {};
+
+				if (
+					!credential_id ||
+					!response ||
+					typeof response !== "string"
+				) {
+					console.warn("Missing credential_id or response");
+					return null;
+				}
+
+				try {
+					// Ambil credential berdasarkan credentialID WebAuthn
+                    const base64CredentialId = Buffer.from(
+						isoBase64URL.toBuffer(credential_id as string)
+					).toString("base64");
+
+					const credential = await prisma.credential.findUnique({
+						where: { credentialID: base64CredentialId },
+                        select: {
+                            id: true,
+                            credentialID: true,
+                            challenge: true,
+                            publicKey: true,
+                            counter: true,
+                            user: true
+                        }
+					});
+
+
+					if (!credential || !credential.user) {
+						console.warn("Credential or user not found");
+						return null;
+					}
+
+                    const verified = await verifyBiometricLogin({
+                        credential: {
+                            id: credential.id,
+                            credentialID: credential.credentialID,
+                            challenge: credential.challenge,
+                            publicKey: credential.publicKey,
+                            counter: credential.counter,
+                            user: credential.user
+                        },
+                        response
+                    })
+
+					if (!verified) {
+						console.warn("Biometric verification failed");
+						return null;
+					}
+
+					return credential.user;
+				} catch (e) {
+					console.error("Biometric login error:", e);
+					return null;
+				}
+			},
+		}),
 	],
 	callbacks: {
 		authorized({ auth, request: { nextUrl } }) {

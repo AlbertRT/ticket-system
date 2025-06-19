@@ -11,7 +11,6 @@ export function SyncDeviceInfo({ access_token, user_id }: { access_token: string
             const device_token = await syncDeviceInfo(access_token, user_id)
 
             if (device_token) {
-                console.log("Sync device info", device_token)
                 Cookies.set("device_token", device_token, {
                     secure: true,
                     sameSite: "Strict",
@@ -22,7 +21,7 @@ export function SyncDeviceInfo({ access_token, user_id }: { access_token: string
                 toast.success("Perangkat tersimpan otomatis.")
             }
         })()
-    }, [access_token, user_id])
+    }, [access_token])
 
     return null
 }
