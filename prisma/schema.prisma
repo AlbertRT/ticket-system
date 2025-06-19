@@ -1,255 +1,276 @@
 enum Role {
-  USER
-  ADMIN
-  ORGANIZER
+    USER
+    ADMIN
+    ORGANIZER
 }
 
 enum PaymentStatus {
-  PENDING
-  PAID
-  FAILED
-  CANCELLED
+    PENDING
+    PAID
+    FAILED
+    CANCELLED
+}
+
+enum MerchantType {
+    BANK
+    EWALLET
 }
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  role          Role      @default(USER)
-  password      String?
-  session_token String?
-  user_agent    String?
-  created_at    DateTime  @default(now())
+    id            String    @id @default(cuid())
+    name          String?
+    email         String?   @unique
+    emailVerified DateTime? @map("email_verified")
+    image         String?
+    role          Role      @default(USER)
+    password      String?
+    session_token String?
+    user_agent    String?
+    created_at    DateTime  @default(now())
 
-  // Relasi
-  accounts         Account[]
-  sessions         Session[]
-  organizations    Organization[]      @relation("UserOrganizations")
-  notifications    Notification[]
-  devices          UserDevice[]
-  userPayments     UserPaymentMethod[]
-  bookings         CustomersBooking[]
-  paymentHistories PaymentHistory[]
-  organizedEvents  Event[]             @relation("EventOrganizer")
+    // Relasi
+    accounts         Account[]
+    sessions         Session[]
+    organizations    Organization[]      @relation("UserOrganizations")
+    notifications    Notification[]
+    devices          UserDevice[]
+    userPayments     UserPaymentMethod[]
+    bookings         CustomersBooking[]
+    paymentHistories PaymentHistory[]
+    organizedEvents  Event[]             @relation("EventOrganizer")
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
-  type              String
-  provider          String
-  providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+    id                String  @id @default(cuid())
+    userId            String  @map("user_id")
+    type              String
+    provider          String
+    providerAccountId String  @map("provider_account_id")
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
+    @@unique([provider, providerAccountId])
+    @@map("accounts")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id           String   @id @default(cuid())
+    sessionToken String   @unique @map("session_token")
+    userId       String   @map("user_id")
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("sessions")
+    @@map("sessions")
 }
 
 model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
+    identifier String
+    token      String
+    expires    DateTime
 
-  @@unique([identifier, token])
-  @@map("verification_tokens")
+    @@unique([identifier, token])
+    @@map("verification_tokens")
 }
 
 model Organization {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  location    String
-  joined_at   DateTime
-  created_at  DateTime @default(now())
-  userId      String
+    id          String   @id @default(cuid())
+    name        String
+    description String
+    location    String
+    joined_at   DateTime
+    created_at  DateTime @default(now())
+    userId      String
 
-  // Relasi
-  user   User    @relation("UserOrganizations", fields: [userId], references: [id])
-  events Event[]
+    // Relasi
+    user   User    @relation("UserOrganizations", fields: [userId], references: [id])
+    events Event[]
 }
 
 model Event {
-  id             String   @id @default(cuid())
-  organizationId String
-  name           String
-  description    String
-  capacity       Int
-  organizerId    String // Foreign key untuk organizer (User)
-  started_at     DateTime
-  ended_at       DateTime
-  promo_id       String?
-  is_fullybooked Boolean
-  max_capacity   Int
-  ticket_count   Int
-  is_promo       Boolean
-  labels         String[]
-  created_at     DateTime @default(now())
+    id             String   @id @default(cuid())
+    organizationId String
+    name           String
+    description    String
+    capacity       Int
+    organizerId    String // Foreign key untuk organizer (User)
+    started_at     DateTime
+    ended_at       DateTime
+    promo_id       String?
+    is_fullybooked Boolean
+    max_capacity   Int
+    ticket_count   Int
+    is_promo       Boolean
+    labels         String[]
+    created_at     DateTime @default(now())
 
-  // Relasi
-  organization     Organization       @relation(fields: [organizationId], references: [id])
-  organizer        User               @relation("EventOrganizer", fields: [organizerId], references: [id]) // Diperbaiki: menggunakan organizerId
-  tickets          Ticket[]
-  analytics        EventAnalytics?
-  bookings         CustomersBooking[]
-  paymentHistories PaymentHistory[]
+    // Relasi
+    organization     Organization       @relation(fields: [organizationId], references: [id])
+    organizer        User               @relation("EventOrganizer", fields: [organizerId], references: [id]) // Diperbaiki: menggunakan organizerId
+    tickets          Ticket[]
+    analytics        EventAnalytics?
+    bookings         CustomersBooking[]
+    paymentHistories PaymentHistory[]
 }
 
 model PromoCode {
-  code                    String   @id
-  amount                  Float
-  valid_thru              DateTime
-  description             String
-  max_promo_used_per_user Int
-  created_at              DateTime @default(now())
+    code                    String   @id
+    amount                  Float
+    valid_thru              DateTime
+    description             String
+    max_promo_used_per_user Int
+    created_at              DateTime @default(now())
 }
 
 model Ticket {
-  id              String   @id @default(cuid())
-  paymentMethodId String // Menggunakan camelCase agar konsisten
-  name            String
-  description     String
-  price           Float
-  total_price     Float
-  sales_start_at  DateTime
-  sales_ended_at  DateTime
-  status          String
-  created_at      DateTime @default(now())
-  eventId         String // Menggunakan camelCase agar konsisten
+    id              String   @id @default(cuid())
+    paymentMethodId String // Menggunakan camelCase agar konsisten
+    name            String
+    description     String
+    price           Float
+    total_price     Float
+    sales_start_at  DateTime
+    sales_ended_at  DateTime
+    status          String
+    created_at      DateTime @default(now())
+    eventId         String // Menggunakan camelCase agar konsisten
 
-  // Relasi
-  event            Event              @relation(fields: [eventId], references: [id]) // Diperbaiki
-  paymentMethod    PaymentMethod      @relation(fields: [paymentMethodId], references: [id]) // Diperbaiki
-  bookings         CustomersBooking[]
-  paymentHistories PaymentHistory[]
+    // Relasi
+    event            Event              @relation(fields: [eventId], references: [id]) // Diperbaiki
+    paymentMethod    PaymentMethod      @relation(fields: [paymentMethodId], references: [id]) // Diperbaiki
+    bookings         CustomersBooking[]
+    paymentHistories PaymentHistory[]
 }
 
 model PaymentMethod {
-  id         String   @id @default(cuid())
-  name       String
-  type       String
-  created_at DateTime @default(now())
+    id         String          @id @default(cuid())
+    name       String
+    type       String
+    created_at DateTime        @default(now())
+    merchantId String // Menggunakan camelCase agar konsisten
+    merchant   PaymentMerchant @relation(fields: [merchantId], references: [id])
 
-  // Relasi
-  tickets Ticket[]
+    // Relasi
+    tickets Ticket[]
 }
 
 model EventAnalytics {
-  id                 String   @id @default(cuid())
-  total_event        String
-  ticket_sold        Int
-  revenue_per_ticket Float
-  total_revenue      Float
-  tickets_made       Int
-  customers_total    Int
-  created_at         DateTime @default(now())
-  eventId            String   @unique // Menggunakan camelCase agar konsisten
-  organizerId        String // Menggunakan camelCase agar konsisten
+    id                 String   @id @default(cuid())
+    total_event        String
+    ticket_sold        Int
+    revenue_per_ticket Float
+    total_revenue      Float
+    tickets_made       Int
+    customers_total    Int
+    created_at         DateTime @default(now())
+    eventId            String   @unique // Menggunakan camelCase agar konsisten
+    organizerId        String // Menggunakan camelCase agar konsisten
 
-  // Relasi
-  event Event @relation(fields: [eventId], references: [id]) // Diperbaiki
+    // Relasi
+    event Event @relation(fields: [eventId], references: [id]) // Diperbaiki
 }
 
 model CustomersBooking {
-  id             String        @id @default(cuid())
-  ticketId       String // Menggunakan camelCase agar konsisten
-  payment_status PaymentStatus
-  userId         String // Menggunakan camelCase agar konsisten
-  eventId        String // Menggunakan camelCase agar konsisten
-  created_at     DateTime      @default(now())
+    id             String        @id @default(cuid())
+    ticketId       String // Menggunakan camelCase agar konsisten
+    payment_status PaymentStatus
+    userId         String // Menggunakan camelCase agar konsisten
+    eventId        String // Menggunakan camelCase agar konsisten
+    created_at     DateTime      @default(now())
 
-  // Relasi
-  ticket         Ticket           @relation(fields: [ticketId], references: [id]) // Diperbaiki
-  user           User             @relation(fields: [userId], references: [id]) // Diperbaiki
-  event          Event            @relation(fields: [eventId], references: [id]) // Diperbaiki
-  PaymentHistory PaymentHistory[]
+    // Relasi
+    ticket         Ticket           @relation(fields: [ticketId], references: [id]) // Diperbaiki
+    user           User             @relation(fields: [userId], references: [id]) // Diperbaiki
+    event          Event            @relation(fields: [eventId], references: [id]) // Diperbaiki
+    PaymentHistory PaymentHistory[]
 }
 
 model PaymentHistory {
-  id                  String        @id @default(cuid())
-  ticketId            String // Menggunakan camelCase agar konsisten
-  bookingId           String // Menggunakan camelCase agar konsisten
-  eventId             String // Menggunakan camelCase agar konsisten
-  payment_status      PaymentStatus
-  userId              String // Menggunakan camelCase agar konsisten
-  userPaymentMethodId String // Menggunakan camelCase agar konsisten
+    id                  String        @id @default(cuid())
+    ticketId            String // Menggunakan camelCase agar konsisten
+    bookingId           String // Menggunakan camelCase agar konsisten
+    eventId             String // Menggunakan camelCase agar konsisten
+    payment_status      PaymentStatus
+    userId              String // Menggunakan camelCase agar konsisten
+    userPaymentMethodId String // Menggunakan camelCase agar konsisten
+    merchantId          String // Menggunakan camelCase agar konsisten
 
-  // Relasi
-  ticket            Ticket            @relation(fields: [ticketId], references: [id]) // Diperbaiki
-  booking           CustomersBooking  @relation(fields: [bookingId], references: [id]) // Diperbaiki
-  event             Event             @relation(fields: [eventId], references: [id]) // Diperbaiki
-  user              User              @relation(fields: [userId], references: [id]) // Diperbaiki
-  userPaymentMethod UserPaymentMethod @relation(fields: [userPaymentMethodId], references: [id]) // Diperbaiki
+    // Relasi
+    ticket            Ticket            @relation(fields: [ticketId], references: [id]) // Diperbaiki
+    booking           CustomersBooking  @relation(fields: [bookingId], references: [id]) // Diperbaiki
+    event             Event             @relation(fields: [eventId], references: [id]) // Diperbaiki
+    user              User              @relation(fields: [userId], references: [id]) // Diperbaiki
+    userPaymentMethod UserPaymentMethod @relation(fields: [userPaymentMethodId], references: [id]) // Diperbaiki
+    merchant          PaymentMerchant   @relation(fields: [merchantId], references: [id])
 }
 
 model UserPaymentMethod {
-  id              String   @id @default(cuid())
-  userId          String // Menggunakan camelCase agar konsisten
-  type            String
-  is_card_payment Boolean
-  bank_name       String?
-  card_type       String?
-  card_number     String?  @db.VarChar(512)
-  expired_month   Int?
-  expired_year    Int?
-  created_at      DateTime @default(now())
+    id              String   @id @default(cuid())
+    userId          String // Menggunakan camelCase agar konsisten
+    type            String
+    is_card_payment Boolean
+    bank_name       String?
+    card_type       String?
+    card_number     String?  @db.VarChar(512)
+    expired_month   Int?
+    expired_year    Int?
+    created_at      DateTime @default(now())
 
-  // Relasi
-  user             User             @relation(fields: [userId], references: [id]) // Diperbaiki
-  paymentHistories PaymentHistory[]
+    // Relasi
+    user             User             @relation(fields: [userId], references: [id]) // Diperbaiki
+    paymentHistories PaymentHistory[]
 }
 
 model UserDevice {
-  id            String   @id @default(cuid())
-  userId        String // Menggunakan camelCase agar konsisten
-  session_token String?
-  device_name   String
-  user_agent    String
-  last_used_at  DateTime
-  device_token  String?
-  created_at    DateTime @default(now())
+    id            String   @id @default(cuid())
+    userId        String // Menggunakan camelCase agar konsisten
+    session_token String?
+    device_name   String
+    user_agent    String
+    last_used_at  DateTime
+    device_token  String?
+    created_at    DateTime @default(now())
 
-  // Relasi
-  user User @relation(fields: [userId], references: [id]) // Diperbaiki
+    // Relasi
+    user User @relation(fields: [userId], references: [id]) // Diperbaiki
 }
 
 model Notification {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  detail      String?
-  userId      String // Menggunakan camelCase agar konsisten
-  is_readed   Boolean
-  created_at  DateTime @default(now())
+    id          String   @id @default(cuid())
+    title       String
+    description String
+    detail      String?
+    userId      String // Menggunakan camelCase agar konsisten
+    is_readed   Boolean
+    created_at  DateTime @default(now())
 
-  // Relasi
-  user User @relation(fields: [userId], references: [id]) // Diperbaiki
+    // Relasi
+    user User @relation(fields: [userId], references: [id]) // Diperbaiki
+}
+
+model PaymentMerchant {
+    id         String       @id @default(cuid())
+    name       String
+    company    String
+    type       MerchantType
+    logo       String
+    created_at DateTime     @default(now())
+
+    paymentMethods PaymentMethod[]
+    histories      PaymentHistory[]
 }
