@@ -12,6 +12,15 @@ export const GetDevice = async (device_token: string): Promise<UserDevice | null
         const result = await prisma.userDevice.findFirst({
             where: {
                 device_token
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true
+                    }
+                }
             }
         })
 
@@ -23,7 +32,11 @@ export const GetDevice = async (device_token: string): Promise<UserDevice | null
             id: result.id,
             user_id: result.userId,
             device_name: result.device_name,
-            last_used_at: result.last_used_at
+            last_used_at: result.last_used_at,
+            user: {
+                name: result.user.name,
+                image: result.user.image || null
+            }
         }
     } catch (error) {
         console.log(error)
