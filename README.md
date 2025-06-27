@@ -12,6 +12,7 @@ Clone the repository and install dependencies:
 git clone https://github.com/yourusername/ticket-system.git
 cd ticket-system
 npm install
+npx prisma db push
 ```
 
 > ⚠️ Ensure the folder name is correctly spelled as `ticket-system`.
