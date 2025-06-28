@@ -1,14 +1,30 @@
 import { generateRegistrationOptions } from "@simplewebauthn/server";
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 
-export async function GET() {
+export async function POST(req: Request) {
 	const session = await auth();
-    const cookie = await cookies()
-
 	if (!session) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
+	const cookie = await cookies()
+    const device_token = cookie.get("device_token")?.value;
+    if (!device_token) {
+        return NextResponse.json({ error: "Device token not found" }, { status: 400 });
+    }
+
+	const device = await prisma.userDevice.findFirst({
+		where: {
+			userId: session.user.id,
+			device_token: device_token,
+		},
+	});
+
+	if (!device) {
+		return NextResponse.json({ error: "Invalid device" }, { status: 404 });
 	}
 
 	const options = await generateRegistrationOptions({
@@ -19,13 +35,19 @@ export async function GET() {
 		attestationType: "none",
 	});
 
-	// Simpan challenge (sudah base64url-safe)
-	cookie.set("biometric-challenge", options.challenge, {
-		httpOnly: true,
-		secure: true,
-		path: "/",
-		maxAge: 60,
-	});
+	await prisma.credential.create({
+        data: {
+            userId: session.user.id as string,
+            deviceId: device.id,
+            challenge: options.challenge,
+            publicKey: "",
+            credentialID: "",
+            counter: 0,
+            transports: "",
+        }
+    })
 
-	return NextResponse.json(options);
+	return NextResponse.json({
+		...options,
+	});
 }

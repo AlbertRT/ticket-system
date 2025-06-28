@@ -9,7 +9,10 @@ import { verifyBiometricLogin } from "./action/verifyBiometricLogin";
 import { isoBase64URL } from "@simplewebauthn/server/helpers";
 export const { handlers, auth, signIn, signOut } = NextAuth({
 	adapter: PrismaAdapter(prisma),
-	session: { strategy: "jwt" },
+	session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 }, // 30 days
+    jwt: {
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+    },
 	pages: {
 		signIn: "/masuk",
 	},
@@ -31,6 +34,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
 				const user = await prisma.user.findUnique({
 					where: { email },
+                    include: { devices: {
+                        select: {
+                            id: true,
+                            device_name: true,
+                            last_used_at: true
+                        }
+                    }}
 				});
 
 				if (!user || !user.password) {
@@ -152,7 +162,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 			return true;
 		},
 		jwt({ token, user, account }) {
-			if (user) token.role = user.role;
+			if (user) {
+                token.role = user.role;
+                
+            };
 			if (account?.provider === "google" && account.access_token) {
 				token.access_token = account.access_token;
 			}

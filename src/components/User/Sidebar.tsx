@@ -5,6 +5,7 @@ import {Separator} from "@/components/ui/separator";
 import Link from "next/link";
 import LogoutButton from "@/components/User/LogoutBtn";
 import { USER_SIDEBAR_MENU } from "@/constatnt/constant";
+import { log } from "console";
 
 export const UserSidebar = async () => {
     const session = await auth()

@@ -17,3 +17,9 @@ export const RegisterSchema = z.object({
     path: ['confirm_password']
 })
 
+
+export const OrganizationSchema = z.object({
+    organizer: z.string().min(1, "Nama organisasi tidak boleh kosong"),
+    description: z.string().min(1, "Deskripsi organisasi tidak boleh kosong"),
+    location: z.string().min(1, "Lokasi organisasi tidak boleh kosong"),
+})

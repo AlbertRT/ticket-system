@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import {
@@ -17,17 +17,24 @@ import { Switch } from "../ui/switch";
 import { toast } from "sonner";
 import { startRegistration } from "@simplewebauthn/browser";
 
-export default function BiometricVerification({ biometricEnabled }: { biometricEnabled?: boolean }) {
-    const [enabled, setEnabled] = useState(biometricEnabled ||false);
+export default function BiometricVerification({
+	biometricEnabled,
+}: {
+	biometricEnabled?: boolean;
+}) {
+	const [enabled, setEnabled] = useState(biometricEnabled || false);
 
-    const handleToggle = async (checked: boolean) => {
+	const handleToggle = async (checked: boolean) => {
 		setEnabled(checked);
 
 		if (checked) {
 			try {
 				// 1. Minta challenge dari server
 				const res = await fetch(
-					"/api/webauthn/generate-registration-options"
+					"/api/webauthn/generate-registration-options",
+					{
+						method: "POST",
+					}
 				);
 				const options = await res.json();
 
@@ -44,11 +51,14 @@ export default function BiometricVerification({ biometricEnabled }: { biometricE
 				);
 
 				const result = await verifyRes.json();
+				console.log(result);
 
 				if (result.success) {
 					toast.success("Biometrik berhasil diaktifkan!");
+					setEnabled(true);
 				} else {
 					toast.error("Gagal menyimpan credential biometrik.");
+					setEnabled(false);
 				}
 			} catch (error) {
 				console.error(error);
@@ -57,13 +67,13 @@ export default function BiometricVerification({ biometricEnabled }: { biometricE
 			}
 		}
 	};
-    
+
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button className="w-full" variant={"outline"}>
+				<Button className="w-full justify-between" variant={"outline"}>
 					<Fingerprint className="mr-2 h-4 w-4" />
-					Verifikasi Biometrik
+					<span className="w-full">Verifikasi Biometrik</span>
 				</Button>
 			</DialogTrigger>
 			<DialogContent>

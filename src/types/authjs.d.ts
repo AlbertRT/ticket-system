@@ -7,9 +7,17 @@ declare module "next-auth" {
     }
     
     interface User {
-        role: string
-        access_token?: string
-    }
+		role: string;
+		access_token?: string;
+		device: [
+			{
+				id: string;
+				device_name: string;
+				last_used_at: Date;
+				device_token: string;
+			}
+		];
+	}
 }
 
 declare module "@auth/core/jwt" {
@@ -17,5 +25,11 @@ declare module "@auth/core/jwt" {
         sub: string,
         role: string
         access_token?: string
+        device: [{
+            id: string,
+            device_name: string,
+            last_used_at: Date
+            device_token: string
+        }]
     }
 }

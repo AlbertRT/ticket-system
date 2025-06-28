@@ -56,6 +56,28 @@ export const USER_SIDEBAR_MENU = [
             },
         ],
         role: ["ADMIN"]
+    },
+    {
+        title: "Organizer",
+        items: [
+            {
+                label: "Dashboard",
+                href: "/organizer/dashboard"
+            },
+            {
+                label: "Kelola Event",
+                href: "/organizer/event"
+            },
+            {
+                label: "Kelola Kupon",
+                href: "/organizer/kupon"
+            },
+            {
+                label: "Pengaturan Akun",
+                href: "/organizer/pengaturan"
+            }
+        ],
+        role: ["ORGANIZER"]
     }
 ]
 

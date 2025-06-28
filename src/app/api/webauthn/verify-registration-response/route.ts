@@ -1,28 +1,22 @@
 import { verifyRegistrationResponse } from "@simplewebauthn/server";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { getCurrentUserDeviceAndCredential } from "@/lib/auth/biometric/getCurrentUserDeviceAndCredential";
 import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
-import { isoBase64URL } from "@simplewebauthn/server/helpers";
 
 export async function POST(req: Request) {
-	const session = await auth();
-    const cookie = await cookies()
-
-	if (!session)
-		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
 	const body = await req.json();
-	const expectedChallenge = cookie.get("biometric-challenge")?.value;
-	if (!expectedChallenge)
-		return NextResponse.json(
-			{ error: "Missing challenge" },
-			{ status: 400 }
-		);
+	let credential;
+
+	try {
+		({ credential } =
+			await getCurrentUserDeviceAndCredential());
+	} catch (err) {
+		return NextResponse.json({ error: "terjadi kesalahan" }, { status: 401 });
+	}
 
 	const verification = await verifyRegistrationResponse({
 		response: body,
-		expectedChallenge,
+		expectedChallenge: credential.challenge,
 		expectedOrigin: process.env.NEXT_PUBLIC_ORIGIN!,
 		expectedRPID: process.env.NEXT_PUBLIC_DOMAIN!,
 	});
@@ -34,13 +28,16 @@ export async function POST(req: Request) {
 	const { credentialID, credentialPublicKey, counter } =
 		verification.registrationInfo!;
 
-	await prisma.credential.create({
+	// Update credential yang sudah dibuat sebelumnya (saat generate)
+	await prisma.credential.update({
+		where: {
+			id: credential.id,
+		},
 		data: {
-			userId: session.user.id!,
 			credentialID: Buffer.from(credentialID).toString("base64"),
 			publicKey: Buffer.from(credentialPublicKey).toString("base64"),
-			challenge: expectedChallenge,
 			counter,
+			transports: "internal",
 		},
 	});
 
