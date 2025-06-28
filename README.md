@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎫 Ticket-System
 
-## Getting Started
+A modern ticket management system with support for Google OAuth authentication, quick login via registered devices, and biometric authentication (currently in beta).
 
-First, run the development server:
+---
+
+## 📦 Installation
+
+Clone the repository and install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/ticket-system.git
+cd ticket-system
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```
+npx prisma db push
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> ⚠️ Ensure the folder name is correctly spelled as `ticket-system`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🛠️ Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+To run this project, create a `.env` file in the root directory and add the following environment variables:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+DATABASE_URL=postgresql://<dbusername>:<dbpassword>@localhost:5432/tiketen
+AUTH_SECRET=
+JWT_SECRET=
+AUTH_GOOGLE_ID=
+AUTH_GOOGLE_SECRET=
+NEXTAUTH_URL=http://localhost:3000
+NEXT_PUBLIC_DOMAIN=localhost
+NEXT_PUBLIC_ORIGIN=http://localhost:3000
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To obtain `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`, set up your project at:  
+👉 https://console.cloud.google.com/
 
-## Deploy on Vercel
+> Register your app on Google Cloud Console and enable the "OAuth 2.0 Client IDs" under the **Credentials** section.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔐 Features
+
+- **Google OAuth** – Sign up and log in using your Google account.
+- **Quick Login** – Instantly log in from previously registered devices.
+- **Biometric Authentication (Beta)** – Enhanced security with fingerprint or face recognition.
+
+---
+
+## Documentation
+[AuthJS](https://authjs.dev/)
+
+[Prisma](https://www.prisma.io/)
+
+## 🧪 Status
+
+This project is currently under development. Contributions and feedback are welcome!
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
