@@ -1,3 +1,4 @@
+import { getCurrentDevice } from "@/action/get-device-details";
 import { getUserDetails } from "@/action/get-user-details";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
@@ -11,18 +12,28 @@ import {
 import BiometricVerification from "@/components/User/BiometricVerification";
 import { UserProfileItem } from "@/components/User/UserProfileItem";
 import { USER_PROFILE_MENU } from "@/constatnt/constant";
+import { getCurrentUserDeviceAndCredential } from "@/lib/auth/biometric/getCurrentUserDeviceAndCredential";
+import { Lock } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function app() {
 	const session = await auth();
+    const current_device = await getCurrentDevice(session?.user.id as string)
 
 	if (!session) {
 		redirect("/");
 	}
 
-	const user = await getUserDetails(session.user.id as string);
-    const biometricEnabled = user.credentials && user.credentials.length > 0;
+    let biometricEnabled
+    try {
+        const {credential} = await getCurrentUserDeviceAndCredential()
+        biometricEnabled = credential ? true : false
+    } catch(err) {
+        biometricEnabled = false
+    }
+
+	const user = await getUserDetails(session.user.id as string,);
 
 	return (
 		<Card className="w-[90%] h-full">
@@ -54,6 +65,10 @@ export default async function app() {
 										Ubah Kata Sandi
 									</Link>
 								</Button>
+                                <Button className="w-full justify-between" variant={"outline"}>
+                                    <Lock className="mr-2 h-4 w-4"/>
+                                    <span className=" w-full">PIN</span>
+                                </Button>
                                 <BiometricVerification biometricEnabled={biometricEnabled} />
 							</div>
 						</div>
@@ -65,7 +80,6 @@ export default async function app() {
 									</h3>
 									<ul className="w-full">
 										{menu.items.map((item, itemIndex) => {
-											const value =
 												user[
 													item.value as keyof typeof user
 												];

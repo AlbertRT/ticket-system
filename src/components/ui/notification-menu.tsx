@@ -7,9 +7,13 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BellIcon } from "lucide-react";
+import { BellIcon, Info } from "lucide-react";
 import { Button } from "./button";
 import { GetNotification } from "@/action/get-notification";
+import { formatDistanceToNow } from "date-fns";
+import { id } from "date-fns/locale";
+import clsx from "clsx";
+import NotifcationItem from "./notifcation-item";
 
 export default async function NotificationMenu({
 	user_id,
@@ -33,9 +37,10 @@ export default async function NotificationMenu({
 				<DropdownMenuSeparator />
 				{notifications.length > 0 ? (
 					notifications.map((notification) => (
-						<DropdownMenuItem key={notification.id}>
-							{notification.title}
-						</DropdownMenuItem>
+						<NotifcationItem
+							key={notification.id}
+							data={notification}
+						/>
 					))
 				) : (
 					<DropdownMenuItem disabled>

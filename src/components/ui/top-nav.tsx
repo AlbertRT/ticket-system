@@ -1,18 +1,25 @@
 import Link from "next/link";
-import {BellIcon, ChevronRight} from "lucide-react";
+import {ChevronRight} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {auth} from '@/auth'
 import {Avatar, AvatarImage} from "./avatar";
 import {QuickLogin} from "@/components/ui/quick-login";
 import {cookies} from "next/headers";
 import NotificationMenu from "./notification-menu";
+import { getCurrentUserDeviceAndCredential } from "@/lib/auth/biometric/getCurrentUserDeviceAndCredential";
 
 
 export default async function TopNav() {
     const session = await auth()
     const cookieStore = await cookies()
     const device_token = cookieStore.get("device_token")?.value
-    const biometric = cookieStore.get("biometric-challenge")?.value;
+    let credential = false;
+	try {
+		const result = await getCurrentUserDeviceAndCredential(device_token);
+		credential = result.credential ? true : false;
+	} catch (err) {
+		credential = false;
+	}
 
     return (
 		<div className="w-full p-10 grid grid-cols-4 bg-white shadow">
@@ -39,8 +46,8 @@ export default async function TopNav() {
 								</Link>
 							</Button>
 							<Button asChild>
-								{biometric || device_token ? (
-									<QuickLogin device_token={device_token as string} biometricEnabled={!!biometric} />
+								{credential || device_token ? (
+									<QuickLogin device_token={device_token as string} biometricEnabled={!!credential} />
 								) : (
 									<Link
 										href="/masuk"

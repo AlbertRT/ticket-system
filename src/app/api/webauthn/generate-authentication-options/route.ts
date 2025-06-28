@@ -1,37 +1,53 @@
-// app/api/auth/webauthn/generate-authentication-options/route.ts
 import { generateAuthenticationOptions } from "@simplewebauthn/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
-	const { user_id } = await req.json();
+	const { user_id, device_id } = await req.json();
 
-	const user = await prisma.user.findFirst({
-		where: {
-			id: user_id
-		},
-		include: { credentials: true },
+	if (!user_id || !device_id) {
+		return NextResponse.json(
+			{ error: "Missing user_id or device_id" },
+			{ status: 400 }
+		);
+	}
+
+	const user = await prisma.user.findUnique({
+		where: { id: user_id },
 	});
 
-	if (!user)
-		return NextResponse.json({ error: "No user found" }, { status: 400 });
+	if (!user) {
+		return NextResponse.json({ error: "User not found" }, { status: 404 });
+	}
+
+	const credential = await prisma.credential.findFirst({
+		where: {
+			userId: user_id,
+			deviceId: device_id,
+		},
+	});
+
+	if (!credential) {
+		return NextResponse.json(
+			{ error: "Credential not found for device" },
+			{ status: 404 }
+		);
+	}
 
 	const options = await generateAuthenticationOptions({
-		allowCredentials: user.credentials.map((cred) => ({
-			id: Buffer.from(cred.credentialID, "base64url"),
-			type: "public-key",
-		})),
+		allowCredentials: [
+			{
+				id: Buffer.from(credential.credentialID, "base64url"),
+				type: "public-key",
+			},
+		],
 		userVerification: "preferred",
 		rpID: process.env.NEXT_PUBLIC_DOMAIN!,
 	});
 
-	const cookiesTransport = await cookies();
-	cookiesTransport.set("biometric-challenge", options.challenge);
-
 	await prisma.credential.update({
-		where: { userId: user.id },
-		data: { challenge: options.challenge }, // atau ke table Credential juga bisa
+		where: { id: credential.id },
+		data: { challenge: options.challenge },
 	});
 
 	return NextResponse.json(options);

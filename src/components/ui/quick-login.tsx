@@ -50,7 +50,7 @@ export function QuickLogin({
 				"/api/webauthn/generate-authentication-options",
 				{
 					method: "POST",
-					body: JSON.stringify({ user_id: user_device?.user_id }),
+					body: JSON.stringify({ user_id: user_device?.user_id, device_id: user_device?.id }),
 					headers: {
 						"Content-Type": "application/json",
 					},
