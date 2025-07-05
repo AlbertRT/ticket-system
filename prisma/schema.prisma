@@ -99,6 +99,7 @@ model Organization {
     joined_at   DateTime
     created_at  DateTime @default(now())
     userId      String
+    url_name    String   @unique // URL-friendly name for the organization
 
     // Relasi
     user   User    @relation("UserOrganizations", fields: [userId], references: [id])
@@ -247,7 +248,7 @@ model UserDevice {
     device_name   String
     user_agent    String
     last_used_at  DateTime
-    device_token  String @unique
+    device_token  String   @unique
     created_at    DateTime @default(now())
 
     // Relasi
@@ -290,7 +291,7 @@ model Credential {
     challenge    String
     transports   String?
     lastUsedAt   DateTime?
-    deviceId     String?   
+    deviceId     String?
     device       UserDevice? @relation(fields: [deviceId], references: [id])
     createdAt    DateTime    @default(now())
 }

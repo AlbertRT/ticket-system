@@ -10,11 +10,14 @@ export async function POST(req: Request) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
-	const cookie = await cookies()
-    const device_token = cookie.get("device_token")?.value;
-    if (!device_token) {
-        return NextResponse.json({ error: "Device token not found" }, { status: 400 });
-    }
+	const cookie = await cookies();
+	const device_token = cookie.get("device_token")?.value;
+	if (!device_token) {
+		return NextResponse.json(
+			{ error: "Device token not found" },
+			{ status: 400 }
+		);
+	}
 
 	const device = await prisma.userDevice.findFirst({
 		where: {
@@ -36,16 +39,16 @@ export async function POST(req: Request) {
 	});
 
 	await prisma.credential.create({
-        data: {
-            userId: session.user.id as string,
-            deviceId: device.id,
-            challenge: options.challenge,
-            publicKey: "",
-            credentialID: "",
-            counter: 0,
-            transports: "",
-        }
-    })
+		data: {
+			userId: session.user.id as string,
+			deviceId: device.id,
+			challenge: options.challenge,
+			publicKey: "",
+			credentialID: "",
+			counter: 0,
+			transports: "",
+		},
+	});
 
 	return NextResponse.json({
 		...options,

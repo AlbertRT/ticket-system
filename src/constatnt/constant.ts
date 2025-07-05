@@ -6,11 +6,11 @@ export const USER_SIDEBAR_MENU = [
         items: [
             {
                 label: "Notifikasi",
-                href: "/user/notifikasi"
+                href: "/notifikasi"
             },
             {
                 label: "Keamanan",
-                href: "/user/keamanan"
+                href: "/keamanan"
             },
         ],
         role: ["USER", "ADMIN", "ORGANIZER"]
@@ -20,11 +20,11 @@ export const USER_SIDEBAR_MENU = [
         items: [
             {
                 label: "Menunggu Pembayaran",
-                href: "/user/transaksi/menunggu-pembayaran"
+                href: "/transaksi/menunggu-pembayaran"
             },
             {
                 label: "Riwayat Transaksi",
-                href: "/user/transaksi/riwayat"
+                href: "/transaksi/riwayat"
             }
         ],
         role: ["USER"]
@@ -34,7 +34,7 @@ export const USER_SIDEBAR_MENU = [
         items: [
             {
                 label: "Metode Pembayaran",
-                href: "/user/metode-pembayaran"
+                href: "/metode-pembayaran"
             }
         ],
         role: ["USER"]
@@ -44,15 +44,15 @@ export const USER_SIDEBAR_MENU = [
         items: [
             {
                 label: "Dashboard",
-                href: "/admin/dashboard"
+                href: "/dashboard"
             },
             {
                 label: "Kelola Pengguna",
-                href: "/admin/pengguna"
+                href: "/pengguna"
             },
             {
                 label: "Pengaturan Aplikasi",
-                href: "/admin/event"
+                href: "/event"
             },
         ],
         role: ["ADMIN"]
@@ -62,19 +62,19 @@ export const USER_SIDEBAR_MENU = [
         items: [
             {
                 label: "Dashboard",
-                href: "/organizer/dashboard"
+                href: "/dashboard"
             },
             {
                 label: "Kelola Event",
-                href: "/organizer/event"
+                href: "/event"
             },
             {
                 label: "Kelola Kupon",
-                href: "/organizer/kupon"
+                href: "/kupon"
             },
             {
                 label: "Pengaturan Akun",
-                href: "/organizer/pengaturan"
+                href: "/pengaturan"
             }
         ],
         role: ["ORGANIZER"]

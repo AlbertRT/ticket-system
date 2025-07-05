@@ -1,24 +1,25 @@
-import NextAuth from "next-auth"
-import {PrismaAdapter} from "@auth/prisma-adapter"
-import {prisma} from "@/lib/prisma"
+import NextAuth from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
 import Credentials from "@auth/core/providers/credentials";
-import {SignInSchema} from "@/lib/zod";
-import {compareSync} from "bcrypt-ts";
+import { SignInSchema } from "@/lib/zod";
+import { compareSync } from "bcrypt-ts";
 import Google from "@auth/core/providers/google";
 import { verifyBiometricLogin } from "./action/verifyBiometricLogin";
 import { isoBase64URL } from "@simplewebauthn/server/helpers";
 export const { handlers, auth, signIn, signOut } = NextAuth({
 	adapter: PrismaAdapter(prisma),
 	session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 }, // 30 days
-    jwt: {
-        maxAge: 30 * 24 * 60 * 60, // 30 days
-    },
+	jwt: {
+		maxAge: 30 * 24 * 60 * 60, // 30 days
+	},
 	pages: {
 		signIn: "/masuk",
 	},
 	providers: [
 		Google,
 		Credentials({
+			id: "",
 			credentials: {
 				email: {},
 				password: {},
@@ -34,13 +35,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
 				const user = await prisma.user.findUnique({
 					where: { email },
-                    include: { devices: {
-                        select: {
-                            id: true,
-                            device_name: true,
-                            last_used_at: true
-                        }
-                    }}
+					include: {
+						devices: {
+							select: {
+								id: true,
+								device_name: true,
+								last_used_at: true,
+							},
+						},
+					},
 				});
 
 				if (!user || !user.password) {
@@ -99,39 +102,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
 				try {
 					// Ambil credential berdasarkan credentialID WebAuthn
-                    const base64CredentialId = Buffer.from(
+					const base64CredentialId = Buffer.from(
 						isoBase64URL.toBuffer(credential_id as string)
 					).toString("base64");
 
 					const credential = await prisma.credential.findUnique({
 						where: { credentialID: base64CredentialId },
-                        select: {
-                            id: true,
-                            credentialID: true,
-                            challenge: true,
-                            publicKey: true,
-                            counter: true,
-                            user: true
-                        }
+						select: {
+							id: true,
+							credentialID: true,
+							challenge: true,
+							publicKey: true,
+							counter: true,
+							user: true,
+						},
 					});
-
 
 					if (!credential || !credential.user) {
 						console.warn("Credential or user not found");
 						return null;
 					}
 
-                    const verified = await verifyBiometricLogin({
-                        credential: {
-                            id: credential.id,
-                            credentialID: credential.credentialID,
-                            challenge: credential.challenge,
-                            publicKey: credential.publicKey,
-                            counter: credential.counter,
-                            user: credential.user
-                        },
-                        response
-                    })
+					const verified = await verifyBiometricLogin({
+						credential: {
+							id: credential.id,
+							credentialID: credential.credentialID,
+							challenge: credential.challenge,
+							publicKey: credential.publicKey,
+							counter: credential.counter,
+							user: credential.user,
+						},
+						response,
+					});
 
 					if (!verified) {
 						console.warn("Biometric verification failed");
@@ -163,9 +165,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 		},
 		jwt({ token, user, account }) {
 			if (user) {
-                token.role = user.role;
-                
-            };
+				token.role = user.role;
+			}
 			if (account?.provider === "google" && account.access_token) {
 				token.access_token = account.access_token;
 			}

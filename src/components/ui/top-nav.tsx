@@ -1,19 +1,23 @@
 import Link from "next/link";
-import {ChevronRight} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {auth} from '@/auth'
-import {Avatar, AvatarImage} from "./avatar";
-import {QuickLogin} from "@/components/ui/quick-login";
-import {cookies} from "next/headers";
+import { ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { auth } from "@/auth";
+import { Avatar, AvatarImage } from "./avatar";
+import { QuickLogin } from "@/components/ui/quick-login";
+import { cookies } from "next/headers";
 import NotificationMenu from "./notification-menu";
 import { getCurrentUserDeviceAndCredential } from "@/lib/auth/biometric/getCurrentUserDeviceAndCredential";
-
+import { getCurrentOrganization } from "@/action/get-user-details";
 
 export default async function TopNav() {
-    const session = await auth()
-    const cookieStore = await cookies()
-    const device_token = cookieStore.get("device_token")?.value
-    let credential = false;
+	const session = await auth();
+	const cookieStore = await cookies();
+	const device_token = cookieStore.get("device_token")?.value;
+	let credential = false;
+	const currentOrganizer = await getCurrentOrganization(
+		session?.user?.id as string
+	);
+
 	try {
 		const result = await getCurrentUserDeviceAndCredential(device_token);
 		credential = result.credential ? true : false;
@@ -21,7 +25,7 @@ export default async function TopNav() {
 		credential = false;
 	}
 
-    return (
+	return (
 		<div className="w-full p-10 grid grid-cols-4 bg-white shadow">
 			<Link href="/" className="hover:underline col-span-1 text-lg">
 				Tiketen.com
@@ -29,12 +33,23 @@ export default async function TopNav() {
 			<div className="col-span-2"></div>
 			<div className="col-span-1 flex items-center">
 				<div className="flex items-center space-x-3">
-					<Button asChild variant="ghost" className="group">
-						<Link href="/organization/get-started">
-							<span>Buat Event Pertama mu!</span>
-							<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
-						</Link>
-					</Button>
+					{!currentOrganizer ? (
+						<Button asChild variant="ghost" className="group">
+							<Link href="/organization/get-started">
+								<span>Buat Event Pertama mu!</span>
+								<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
+							</Link>
+						</Button>
+					) : (
+						<Button asChild variant="ghost" className="group">
+							<Link
+								href={`/${currentOrganizer.url_name}/dashboard`}
+							>
+								<span>{currentOrganizer.name}</span>
+								<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
+							</Link>
+						</Button>
+					)}
 					{!session ? (
 						<>
 							<Button asChild variant={"outline"}>
@@ -47,7 +62,10 @@ export default async function TopNav() {
 							</Button>
 							<Button asChild>
 								{credential || device_token ? (
-									<QuickLogin device_token={device_token as string} biometricEnabled={!!credential} />
+									<QuickLogin
+										device_token={device_token as string}
+										biometricEnabled={!!credential}
+									/>
 								) : (
 									<Link
 										href="/masuk"
@@ -60,7 +78,7 @@ export default async function TopNav() {
 						</>
 					) : (
 						<div className="flex space-x-4">
-                            <NotificationMenu user_id={session.user.id} />
+							<NotificationMenu user_id={session.user.id} />
 							<Button
 								asChild
 								variant={"outline"}

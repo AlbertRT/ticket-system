@@ -1,14 +1,14 @@
-"use server"
+"use server";
 
 import { prisma } from "@/lib/prisma";
 
 export const getUserDetails = async (user_id: string) => {
-    if (!user_id) {
-        throw new Error("User ID is required");
-    }
+	if (!user_id) {
+		throw new Error("User ID is required");
+	}
 
-    try {
-        const user = await prisma.user.findUnique({
+	try {
+		const user = await prisma.user.findUnique({
 			where: { id: user_id },
 			select: {
 				id: true,
@@ -22,11 +22,38 @@ export const getUserDetails = async (user_id: string) => {
 			},
 		});
 
-        return {
+		return {
 			...user,
 		};
-    } catch (error) {
-        console.error("Error fetching user details:", error);
-        throw error;
-    }
-}
+	} catch (error) {
+		console.error("Error fetching user details:", error);
+		throw error;
+	}
+};
+
+export const getCurrentOrganization = async (user_id: string) => {
+	if (!user_id) {
+		return null;
+	}
+
+	try {
+		const organization = await prisma.organization.findFirst({
+			where: {
+				userId: user_id,
+			},
+			select: {
+				id: true,
+				name: true,
+				description: true,
+				location: true,
+				url_name: true,
+				created_at: true,
+			},
+		});
+
+		return organization;
+	} catch (error) {
+		console.error("Error fetching organization details:", error);
+		throw error;
+	}
+};

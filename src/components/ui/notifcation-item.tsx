@@ -1,22 +1,20 @@
-"use client"
+"use client";
 
-import { Notification } from '@prisma/client'
-import React from 'react'
-import { DropdownMenuItem } from './dropdown-menu';
-import clsx from 'clsx';
-import { BellIcon, Info } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { id } from 'date-fns/locale';
-import { readNotification } from '@/lib/readNotifcation';
+import { Notification } from "@prisma/client";
+import React from "react";
+import { DropdownMenuItem } from "./dropdown-menu";
+import clsx from "clsx";
+import { BellIcon, Info } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { id } from "date-fns/locale";
+import { readNotification } from "@/lib/helper/readNotifcation";
 
-export default function NotifcationItem({data}: { data: Notification }) {
-  return (
+export default function NotifcationItem({ data }: { data: Notification }) {
+	return (
 		<DropdownMenuItem
 			key={data.id}
-			className={clsx(
-				!data.is_readed && "bg-gray-100 cursor-pointer"
-			)}
-            onClick={() => !data.is_readed && readNotification(data.id) }
+			className={clsx(!data.is_readed && "bg-gray-100 cursor-pointer")}
+			onClick={() => !data.is_readed && readNotification(data.id)}
 		>
 			<div className="w-full space-y-3">
 				{data.detail === "INFO" ? (
@@ -48,5 +46,5 @@ export default function NotifcationItem({data}: { data: Notification }) {
 				</div>
 			</div>
 		</DropdownMenuItem>
-  );
+	);
 }
