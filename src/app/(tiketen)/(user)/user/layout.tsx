@@ -23,7 +23,7 @@ export default async function RootLayout({
     );
 
     return (
-        <div className="max-w-[1400] mx-auto flex gap-5">
+        <div className="max-w-7xl mx-auto flex gap-5">
             <UserSidebar Organization={currentOrganizer as OrganizationDetails}  />
             {children}
         </div>

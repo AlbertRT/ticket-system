@@ -26,78 +26,83 @@ export default async function TopNav() {
 	}
 
 	return (
-		<div className="w-full p-10 grid grid-cols-4 bg-white shadow">
-			<Link href="/" className="hover:underline col-span-1 text-lg">
-				Tiketen.com
-			</Link>
-			<div className="col-span-2"></div>
-			<div className="col-span-1 flex items-center">
-				<div className="flex items-center space-x-3">
-					{!currentOrganizer ? (
-						<Button asChild variant="ghost" className="group">
-							<Link href="/organization/get-started">
-								<span>Buat Event Pertama mu!</span>
-								<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
-							</Link>
-						</Button>
-					) : (
-						<Button asChild variant="ghost" className="group">
-							<Link
-								href={`/${currentOrganizer.url_name}/dashboard`}
-							>
-								<span>{currentOrganizer.name}</span>
-								<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
-							</Link>
-						</Button>
-					)}
-					{!session ? (
-						<>
-							<Button asChild variant={"outline"}>
-								<Link
-									href="/daftar"
-									className="flex items-center font-bold text-sm"
-								>
-									Daftar
+		<div className="w-full bg-white shadow py-6 px-4">
+			<div className="max-w-7xl mx-auto flex justify-between items-center gap-4">
+				<Link href="/" className="hover:underline text-lg">
+					Tiketen.com
+				</Link>
+				<div className="flex items-center">
+					<div className="flex items-center space-x-3">
+						{!currentOrganizer ? (
+							<Button asChild variant="ghost" className="group">
+								<Link href="/organization/get-started">
+									<span>Buat Event Pertama mu!</span>
+									<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
 								</Link>
 							</Button>
-							<Button asChild>
-								{credential || device_token ? (
-									<QuickLogin
-										device_token={device_token as string}
-										biometricEnabled={!!credential}
-									/>
-								) : (
+						) : (
+							<Button asChild variant="ghost" className="group">
+								<Link
+									href={`/${currentOrganizer.url_name}/dashboard`}
+								>
+									<span>{currentOrganizer.name}</span>
+									<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
+								</Link>
+							</Button>
+						)}
+						{!session ? (
+							<>
+								<Button asChild variant={"outline"}>
 									<Link
-										href="/masuk"
+										href="/daftar"
 										className="flex items-center font-bold text-sm"
 									>
-										Masuk
+										Daftar
 									</Link>
-								)}
-							</Button>
-						</>
-					) : (
-						<div className="flex space-x-4">
-							<NotificationMenu user_id={session.user.id} />
-							<Button
-								asChild
-								variant={"outline"}
-								className="flex items-center"
-							>
-								<Link href="/user">
-									<Avatar className="w-6 h-6">
-										<AvatarImage
-											src={
-												session.user.image ||
-												"/avatar.png"
+								</Button>
+								<Button asChild>
+									{credential || device_token ? (
+										<QuickLogin
+											device_token={
+												device_token as string
 											}
+											biometricEnabled={!!credential}
 										/>
-									</Avatar>
-									<span>{session.user?.name}</span>
-								</Link>
-							</Button>
-						</div>
-					)}
+									) : (
+										<Link
+											href="/masuk"
+											className="flex items-center font-bold text-sm"
+										>
+											Masuk
+										</Link>
+									)}
+								</Button>
+							</>
+						) : (
+							<div className="flex space-x-4">
+								<NotificationMenu user_id={session.user.id} />
+								<Button
+									asChild
+									variant={"outline"}
+									className="flex items-center h-[40px]"
+								>
+									<Link href="/user">
+										<Avatar className="w-6 h-6">
+											<AvatarImage
+												src={
+													session.user.image ||
+													"/avatar.png"
+												}
+											/>
+										</Avatar>
+										<span className="font-bold">
+											Hi, {session.user?.name}
+										</span>
+									</Link>
+								</Button>
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>

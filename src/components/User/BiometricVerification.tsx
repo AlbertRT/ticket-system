@@ -51,7 +51,6 @@ export default function BiometricVerification({
 				);
 
 				const result = await verifyRes.json();
-				console.log(result);
 
 				if (result.success) {
 					toast.success("Biometrik berhasil diaktifkan!");

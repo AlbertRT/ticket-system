@@ -9,6 +9,17 @@ import { getCurrentOrganization } from "@/action/get-user-details";
 import SwitchUserButton from "./SwitchUserButton";
 import { OrganizationDetails } from "@/types/type";
 import { getBasePathForRole } from "@/lib/helper/getBasePathForRole";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "../ui/dialog";
+import { Button } from "../ui/button";
+import { LogOut } from "lucide-react";
 
 export const UserSidebar = async ({
 	Organization,
@@ -88,7 +99,32 @@ export const UserSidebar = async ({
 							<Separator />
 						</>
 					)}
-					<LogoutButton />
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button
+								className="w-full cursor-pointer justify-between text-destructive font-bold hover:bg-destructive hover:text-white"
+								variant={"ghost"}
+							>
+								<LogOut className="mr-2 h-4 w-4" />
+								<span className="w-full">Keluar</span>
+							</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Yakin mau keluar?</DialogTitle>
+								<DialogDescription>
+									Kamu akan keluar dari akun ini. Tapi tenang,
+									data dan pengaturanmu tetap aman kok. ✌️
+								</DialogDescription>
+							</DialogHeader>
+							<div className="flex items-center mt-7 justify-center w-full gap-4">
+								<DialogClose asChild className="w-1/2">
+									<Button variant={"outline"}>Batal</Button>
+								</DialogClose>
+								<LogoutButton />
+							</div>
+						</DialogContent>
+					</Dialog>
 				</div>
 			</CardFooter>
 		</Card>
