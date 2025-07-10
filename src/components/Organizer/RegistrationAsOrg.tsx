@@ -37,6 +37,12 @@ export default function RegistrationAsOrg() {
 					<Textarea id="description" className="mt-4" name="description" />
 				</div>
 				<div className="space-y-4">
+					<Label htmlFor="url">
+						Masukan nama URL untuk organisasi mu.
+					</Label>
+					<Input id="url" className="mt-4" name="url" />
+				</div>
+				<div className="space-y-4">
 					<Label htmlFor="location">
 						Masukan lokasi dimana kamu berada.
 					</Label>

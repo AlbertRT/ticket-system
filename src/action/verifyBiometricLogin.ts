@@ -22,7 +22,7 @@ export const verifyBiometricLogin = async ({
 	response: any;
 }): Promise<boolean> => {
 	try {
-        const parsedResponse = JSON.parse(response);
+		const parsedResponse = JSON.parse(response);
 		// Validasi presence
 		if (!credential.credentialID || !parsedResponse.id) {
 			console.error("Missing credential ID");

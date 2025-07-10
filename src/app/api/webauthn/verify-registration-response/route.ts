@@ -8,10 +8,12 @@ export async function POST(req: Request) {
 	let credential;
 
 	try {
-		({ credential } =
-			await getCurrentUserDeviceAndCredential());
+		({ credential } = await getCurrentUserDeviceAndCredential());
 	} catch (err) {
-		return NextResponse.json({ error: "terjadi kesalahan" }, { status: 401 });
+		return NextResponse.json(
+			{ error: "terjadi kesalahan" },
+			{ status: 401 }
+		);
 	}
 
 	const verification = await verifyRegistrationResponse({

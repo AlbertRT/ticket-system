@@ -6,7 +6,7 @@ import React from 'react'
 
 export default function page() {
   return (
-		<Card className="w-[90%]">
+		<Card className="w-[85%]">
 			<CardHeader>
 				<CardTitle>Metode Pembayaran</CardTitle>
 				<CardDescription>

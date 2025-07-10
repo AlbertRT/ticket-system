@@ -8,7 +8,7 @@ export const getCurrentUserDeviceAndCredential = async (
 	device_token: string | null = null
 ) => {
 	const cookie = await cookies();
-	const session = await auth()
+	const session = await auth();
 	const userId = session?.user?.id || null;
 
 	// Ambil token dari argumen atau cookie

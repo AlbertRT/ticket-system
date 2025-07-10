@@ -26,10 +26,10 @@ export async function POST(req: Request) {
 
 	// Cari user dan credential berdasarkan credential ID
 	const credential = await prisma.credential.findUnique({
-        where: {
-            credentialID: id,
-        }
-    })
+		where: {
+			credentialID: id,
+		},
+	});
 
 	if (!credential) {
 		return NextResponse.json(
@@ -75,10 +75,9 @@ export async function POST(req: Request) {
 	await prisma.credential.update({
 		where: { credentialID: id },
 		data: {
-			counter: authenticationInfo.newCounter
+			counter: authenticationInfo.newCounter,
 		},
 	});
-
 
 	return NextResponse.json({
 		verified: true,

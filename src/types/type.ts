@@ -21,3 +21,12 @@ export type ProfileMenuItem = {
     label: string,
     value: keyof User
 }
+
+export type OrganizationDetails = {
+    id: string,
+    name: string,
+    description: string
+    location: string
+    url_name: string,
+    created_at: Date
+}
