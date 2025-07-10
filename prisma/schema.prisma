@@ -23,7 +23,9 @@ enum TicketStatus {
 }
 
 enum PaymentCategory {
-    CARD
+    DEBIT
+    CREDIT
+    BANK_TRANSFER
     VA
     QRIS
     EWALLET
@@ -284,26 +286,25 @@ model PaymentChannel {
     type      PaymentCategory
     createdAt DateTime        @default(now())
 
-    userChannels UserPaymentChannel[]
     orgChannels  OrgPaymentChannel[]
 }
 
 model UserPaymentChannel {
     id               String          @id @default(cuid())
     userId           String
-    paymentChannelId String
     externalId       String
     type             PaymentCategory
     token            String
     design           String          @default("default")
-    card_expired     DateTime?
+    card_expired     String?
+    issuer_name      String?
+    masked_number    String?
+    scheme           String?
     isActive         Boolean         @default(true)
     isPrimary        Boolean         @default(false)
-    expiredAt        DateTime?
     createdAt        DateTime        @default(now())
 
     user           User           @relation(fields: [userId], references: [id])
-    paymentChannel PaymentChannel @relation(fields: [paymentChannelId], references: [id])
     paymentHistories PaymentHistory[]
 }
 

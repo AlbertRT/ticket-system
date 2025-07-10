@@ -1,10 +1,12 @@
+import { GetUserPaymentChannel } from '@/action/get-user-payment-channel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import CardSection from '@/components/User/PaymentMethod/CardSection';
 import { CreditCard, Wallet2 } from "lucide-react";
 import React from 'react'
 
-export default function page() {
+export default async function page() {
+    const userPaymentChannel = await GetUserPaymentChannel()
   return (
 		<Card className="w-[85%]">
 			<CardHeader>
@@ -45,11 +47,11 @@ export default function page() {
 					</TabsList>
 					<div className="grow rounded-md border text-start">
 						<TabsContent value="card">
-							<CardSection />
+							<CardSection
+								paymentChannel={userPaymentChannel ?? null}
+							/>
 						</TabsContent>
-						<TabsContent value="e-wallet">
-							
-						</TabsContent>
+						<TabsContent value="e-wallet"></TabsContent>
 					</div>
 				</Tabs>
 			</CardContent>

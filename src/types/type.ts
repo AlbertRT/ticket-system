@@ -1,4 +1,4 @@
-import { User } from "@prisma/client"
+import { $Enums, User } from "@prisma/client"
 
 export type UserDevice = {
     id: string,
@@ -29,4 +29,39 @@ export type OrganizationDetails = {
     location: string
     url_name: string,
     created_at: Date
+}
+
+export type CardData = {
+    number: string,
+    expiry: string,
+    cvv: string
+}
+
+export interface PaymentTokenResult {
+    token_id: string
+    token: string
+    masked: string,
+    scheme: CardBrand,
+    type: string | null,
+    issuer_name: string | null,
+}
+
+export type CardBrand =
+	| "Mastercard"
+	| "Visa"
+	| "American Express"
+	| "JCB"
+	| "UnionPay"
+	| "Unknown";
+
+export interface UserPaymentChannel {
+    id: string,
+    type: $Enums.PaymentCategory,
+    design: string
+    isActive: boolean,
+    isPrimary: boolean,
+    card_expired: string | null
+    issuer_name: string | null
+    masked_number: string | null
+    scheme: string | null
 }
