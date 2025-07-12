@@ -43,7 +43,8 @@ export interface PaymentTokenResult {
     masked: string,
     scheme: CardBrand,
     type: string | null,
-    issuer_name: string | null,
+    issuer_bank: string | null,
+    tier: string | null
 }
 
 export type CardBrand =
@@ -61,7 +62,8 @@ export interface UserPaymentChannel {
     isActive: boolean,
     isPrimary: boolean,
     card_expired: string | null
-    issuer_name: string | null
+    issuer_bank: string | null
     masked_number: string | null
     scheme: string | null
+    tier: string | null
 }

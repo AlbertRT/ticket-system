@@ -111,3 +111,30 @@ export const USER_PROFILE_MENU: UserProfileMenu[] = [
         ]
     },
 ]
+
+export const ISSUER_BANK_LOGO: Record<string, string> = {
+	"PT BANK CENTRAL ASIA": "bca.png",
+	"PT BANK CENTRAL ASIA TBK": "bca.png",
+	"P.T. BANK CIMB NIAGA TBK": "cimb.png",
+	"PT BANK DANAMON LNDONESIA TBK": "danamon.png",
+	"PT. BANK DBS INDONESIA": "dbs.png",
+	"PT BANK DIGITAL BCA": "blu.png",
+	"PT. BANK DJASA ARTA": "bsi.png",
+	"PT BANK HSBC INDONESIA": "hsbc.png",
+	"PT. BANK MANDIRI (PERSERO) TBK": "mandiri.png",
+	"PT. BANK MAYBANK INDONESIA TBK": "maybank.png",
+	"PT. BANK MEGA TBK": "mega.png",
+	"PT. BANK NEGARA INDONESIA (PERSERO) TBK": "bni.png",
+	"PT BANK OCBC NISP TBK": "ocbc.png",
+	"PT. BANK PAN INDONESIA TBK": "panin.png",
+	"PT. PAN INDONESIA BANK TBK. (PT. BANK PANIN TBK)": "panin.png",
+	"PT. BANK PERMATA TBK": "permata.png",
+	"PT. BANK RAKYAT INDONESIA (PERSERO)": "bri.png",
+	"PT BANK UOB INDONESIA": "uob.png",
+	"PT BANK SYARIAH INDONESIA TBK": "bsi.png",
+	null: "default.png",
+};
+
+export const ACCECPTED_PAYMENT_CARD = [
+    "AMERICAN EXPRESS", "JCB", "VISA", "MASTERCARD","UNIONPAY"
+]

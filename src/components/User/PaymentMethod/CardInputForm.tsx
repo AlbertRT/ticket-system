@@ -8,6 +8,7 @@ import { useRef, useState } from "react";
 import { validateCardNumberByBrand } from "@/lib/payment/brand-validator";
 import { cn } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
+import { ACCECPTED_PAYMENT_CARD } from "@/constatnt/constant";
 
 interface CardFormValues {
 	number: string;
@@ -74,9 +75,24 @@ export function CardInputForm({
 	};
 
 	return (
-		<div className="space-y-5">
+		<div className="space-y-5 mt-5">
 			<div className="space-y-2">
-				<Label htmlFor="number">Nomor Kartu</Label>
+				<div className="flex items-center justify-between">
+					<Label htmlFor="number">Nomor Kartu</Label>
+					<div className="flex items-center gap-2">
+						{ACCECPTED_PAYMENT_CARD.map((method, id) => (
+							<Image
+								src={`/logo/card/${method
+									.toLowerCase()
+									.replace(" ", "-")}.png`}
+								width={20}
+								height={20}
+								alt={brand}
+								key={id}
+							/>
+						))}
+					</div>
+				</div>
 				<div className="relative flex items-center">
 					<Input
 						placeholder="1234 1234 1234 1234"
@@ -107,7 +123,10 @@ export function CardInputForm({
 					/>
 				</div>
 				{!isCardValid && value.number.length > 0 && (
-                    <p className="text-red-500 text-xs">Nomor kartu tidak valid.</p>)}
+					<p className="text-red-500 text-xs">
+						Nomor kartu tidak valid.
+					</p>
+				)}
 			</div>
 
 			<div className="grid grid-cols-2 gap-4">
@@ -139,9 +158,15 @@ export function CardInputForm({
 				<Button
 					className="w-full mt-4 cursor-pointer"
 					onClick={onSubmit}
-					disabled={!isCardValid || value.number.length === 0 || loading}
+					disabled={
+						!isCardValid || value.number.length === 0 || loading
+					}
 				>
-					{loading ? <LoaderCircle className="animate-spin" /> : submitLabel}
+					{loading ? (
+						<LoaderCircle className="animate-spin" />
+					) : (
+						submitLabel
+					)}
 				</Button>
 			)}
 		</div>

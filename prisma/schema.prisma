@@ -212,18 +212,18 @@ model CustomerBooking {
 }
 
 model PaymentHistory {
-    id                  String        @id @default(cuid())
-    ticketId            String
-    bookingId           String
-    eventId             String
-    payment_status      PaymentStatus
-    userId              String
+    id                   String        @id @default(cuid())
+    ticketId             String
+    bookingId            String
+    eventId              String
+    payment_status       PaymentStatus
+    userId               String
     userPaymentChannelId String
 
-    ticket            Ticket            @relation(fields: [ticketId], references: [id])
-    booking           CustomerBooking   @relation(fields: [bookingId], references: [id])
-    event             Event             @relation(fields: [eventId], references: [id])
-    user              User              @relation(fields: [userId], references: [id])
+    ticket            Ticket             @relation(fields: [ticketId], references: [id])
+    booking           CustomerBooking    @relation(fields: [bookingId], references: [id])
+    event             Event              @relation(fields: [eventId], references: [id])
+    user              User               @relation(fields: [userId], references: [id])
     userPaymentMethod UserPaymentChannel @relation(fields: [userPaymentChannelId], references: [id])
 }
 
@@ -286,25 +286,27 @@ model PaymentChannel {
     type      PaymentCategory
     createdAt DateTime        @default(now())
 
-    orgChannels  OrgPaymentChannel[]
+    orgChannels OrgPaymentChannel[]
 }
 
 model UserPaymentChannel {
-    id               String          @id @default(cuid())
-    userId           String
-    externalId       String
-    type             PaymentCategory
-    token            String
-    design           String          @default("default")
-    card_expired     String?
-    issuer_name      String?
-    masked_number    String?
-    scheme           String?
-    isActive         Boolean         @default(true)
-    isPrimary        Boolean         @default(false)
-    createdAt        DateTime        @default(now())
+    id            String          @id @default(cuid())
+    userId        String
+    externalId    String
+    type          PaymentCategory
+    token         String
+    design        String          @default("default")
+    card_expired  String?
+    issuer_bank   String?
+    masked_number String?
+    scheme        String?
+    tier          String?
+    logo          String?
+    isActive      Boolean         @default(true)
+    isPrimary     Boolean         @default(false)
+    createdAt     DateTime        @default(now())
 
-    user           User           @relation(fields: [userId], references: [id])
+    user             User             @relation(fields: [userId], references: [id])
     paymentHistories PaymentHistory[]
 }
 

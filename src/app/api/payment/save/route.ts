@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-    const { token_id, token, masked, scheme, type, issuer_name, expires } = await req.json();
+    const { token_id, token, masked, scheme, type, issuer_bank, expires, tier } = await req.json();
     const session = await auth()
 
     if (!token_id || !token || !masked || !scheme) {
@@ -17,6 +17,16 @@ export async function POST(req: Request) {
         return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
     }
 
+    const currentCardLen = await prisma.userPaymentChannel.findMany({
+        where: {
+            userId: session.user.id
+        }
+    })
+
+    if (currentCardLen.length >= 4) {
+        return NextResponse.json({ msg: "Kartu kamu sudah lebih dari 4" }, { status: 400 })
+    }
+
     try {
         await Promise.all([
 			prisma.userPaymentChannel.create({
@@ -27,22 +37,23 @@ export async function POST(req: Request) {
 					type: type.toUpperCase(),
 					masked_number: masked,
 					scheme,
-					issuer_name,
+					issuer_bank,
 					design: "default",
 					isActive: true,
 					isPrimary: false,
+                    tier,
 					card_expired: expires,
 				},
 			}),
-            prisma.notification.create({
-                data: {
-                    userId: session.user.id as string,
-                    title: "💳 Kartu kamu udah masuk~",
-                    detail: "SUCCESS",
-                    description: "Gass! Kartu kamu udah aman di sistem 😎",
-                    is_readed: false,
-                },
-            })
+			prisma.notification.create({
+				data: {
+					userId: session.user.id as string,
+					title: "💳 Kartu kamu udah masuk~",
+					detail: "SUCCESS",
+					description: "Gass! Kartu kamu udah aman di sistem 😎",
+					is_readed: false,
+				},
+			}),
 		]);
 
         return NextResponse.json({ success: true, msg: "Kartu berhasil di tambah." }, { status: 200 })

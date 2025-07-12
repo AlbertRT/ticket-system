@@ -15,76 +15,87 @@ import { generateToken } from "@/lib/payment/card-tokenizer";
 import { toast } from "sonner";
 import { UserPaymentChannel } from "@/types/type";
 import BankCard from "./BankCard";
+import useSWR from "swr";
+import { SessionProvider, useSession } from "next-auth/react";
+import { useUserPaymentChannels } from "@/app/hook/useUserPaymentChannel";
+import LoadingOverlay from "@/components/ui/loading-overlay";
 
-
-
-export default function CardSection({
-	paymentChannel,
-}: {
-	paymentChannel: UserPaymentChannel[] | null;
-}) {
+export default function CardSection() {
 	const [form, setForm] = useState({
 		number: "",
 		expiry: "",
 		cvv: "",
 	});
 	const [loading, setLoading] = useState(false);
+    const fetcher = (url: string) => fetch(url).then((res) => res.json());
+    const { paymentChannels, isLoading, refresh } = useUserPaymentChannels();
+    const { data: session } = useSession();
+    const [open, setOpen] = useState(false);
+
+    if (isLoading) return <p>Memuat kartu..</p>
+    if (!paymentChannels) return <p>Gagal memuat data kartu.</p>;
 
 	const handleSubmit = async () => {
-		console.log("triggered.");
-		setLoading(true);
-
 		try {
-			const cardData = await generateToken(form, "user-id-placeholder");
-			const body = {
-				token_id: cardData.token_id,
-				token: cardData.token,
-				scheme: cardData.scheme,
-				type: cardData.type,
-				masked: cardData.masked,
-				issuer_name: cardData.issuer_name,
-				expires: form.expiry,
-			};
+			setLoading(true);
 
+			const cardData = await generateToken(
+				form,
+				session?.user.id || "anonymous"
+			);
 
-			if (cardData) {
-				const res = await fetch("/api/payment/save", {
-					headers: {
-						"Content-Type": "application/json",
-					},
-					method: "POST",
-					body: JSON.stringify(body),
-				});
+			if (!cardData) throw new Error("Token gagal dibuat.");
 
-				if (res.ok) {
-					setLoading(false);
-					toast.success("Kartu baru berhasil di tambah.");
-				} else {
-					setLoading(false);
-					toast.error("Terjadi kesalahan");
-				}
-			}
-		} catch (error) {
+			const res = await fetch("/api/payment/save", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					token_id: cardData.token_id,
+					token: cardData.token,
+					scheme: cardData.scheme,
+					type: cardData.type,
+					masked: cardData.masked,
+					issuer_bank: cardData.issuer_bank?.replace(/\.$/, ""),
+					tier: cardData.tier,
+					expires: form.expiry,
+				}),
+			});
+
+			if (!res.ok) {
+                const {msg} = await res.json()
+                console.log(msg)
+                setForm({ number: "", expiry: "", cvv: "" });
+                toast.error("Gagal menyimpan kartu.", { description: msg })
+                return
+            }
+
+			toast.success("Kartu baru berhasil ditambahkan.");
+			refresh();
+			setForm({ number: "", expiry: "", cvv: "" });
+		} catch (err) {
+            setForm({ number: "", expiry: "", cvv: "" });
+			toast.error("Terjadi kesalahan saat menyimpan kartu.", { description: err as string });
+		} finally {
 			setLoading(false);
-			console.error(error);
-			toast.error("Gagal membuat token kartu. Silakan coba lagi.");
+            setOpen(false)
 		}
 	};
 
 	return (
 		<div className="p-4">
-			{paymentChannel ? (
-				paymentChannel.map((channel) => (
-					<BankCard channel={channel} key={channel.id} />
-				))
-			) : (
-				<p className="font-bold text-muted-foreground">
-					Kamu belum memiliki kartu.
-				</p>
-			)}
-			<Dialog>
+            {isLoading && <LoadingOverlay fullscreen />}
+			{paymentChannels &&
+				paymentChannels.map((channel: UserPaymentChannel) => (
+					<BankCard channel={channel} key={channel.id} onUpdated={refresh} />
+				))}
+			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
-					<Button variant="outline" className="mt-2 w-full">
+					<Button
+						variant="outline"
+						className="mt-2 w-full"
+						onClick={() => setOpen(true)}
+						disabled={isLoading}
+					>
 						Tambah Kartu
 					</Button>
 				</DialogTrigger>
@@ -92,15 +103,13 @@ export default function CardSection({
 					<DialogHeader>
 						<DialogTitle>Registrasi kartu baru.</DialogTitle>
 						<DialogDescription>
-							Kami menerima kartu dari Mastercard, Visa, AMEX, JCB
-							dan UnionPay.
+							Simpan kartu mu biar ga repot kalau mau bayar.
 						</DialogDescription>
 					</DialogHeader>
 					<CardInputForm
 						value={form}
 						onChange={setForm}
 						onSubmit={handleSubmit}
-						submitLabel="Pakai Kartu ini"
 						loading={loading}
 					/>
 				</DialogContent>

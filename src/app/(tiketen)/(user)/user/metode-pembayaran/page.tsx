@@ -1,12 +1,11 @@
-import { GetUserPaymentChannel } from '@/action/get-user-payment-channel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import CardSection from '@/components/User/PaymentMethod/CardSection';
 import { CreditCard, Wallet2 } from "lucide-react";
+import { SessionProvider } from 'next-auth/react';
 import React from 'react'
 
 export default async function page() {
-    const userPaymentChannel = await GetUserPaymentChannel()
   return (
 		<Card className="w-[85%]">
 			<CardHeader>
@@ -47,9 +46,9 @@ export default async function page() {
 					</TabsList>
 					<div className="grow rounded-md border text-start">
 						<TabsContent value="card">
-							<CardSection
-								paymentChannel={userPaymentChannel ?? null}
-							/>
+							<SessionProvider>
+								<CardSection />
+							</SessionProvider>
 						</TabsContent>
 						<TabsContent value="e-wallet"></TabsContent>
 					</div>

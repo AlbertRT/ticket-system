@@ -23,9 +23,10 @@ export async function GetUserPaymentChannel() {
                 design: true,
                 isActive: true,
                 isPrimary: true,
-                issuer_name: true,
+                issuer_bank: true,
                 masked_number: true,
-                scheme: true
+                scheme: true,
+                tier: true
             }
         })
 

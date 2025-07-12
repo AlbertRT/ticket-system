@@ -38,9 +38,10 @@ export async function generateToken(
 	}).toString();
 	const token = iv.toString(crypto.enc.Hex) + ":" + encrypted;
 	const last4 = card.number.slice(-4);
+    const bin = card.number.slice(0, 6)
     const brand = getCardBrand(card.number);
     const lookup = await (
-		await fetch(`https://data.handyapi.com/bin/${card.number.slice(0, 8)}`, {
+		await fetch(`https://data.handyapi.com/bin/${card.number.slice(0, 6)}`, {
             headers: { 'x-api-key': process.env.HANDY_API_KEY || '' },
         })
 	).json();
@@ -49,8 +50,9 @@ export async function generateToken(
 		token_id,
 		token,
 		masked: `**** ${last4}`,
-		brand,
+		scheme: brand,
 		type: lookup.Type || null,
-		issuer_name: lookup.Issuer || null,
+		issuer_bank: lookup.Issuer || null,
+        tier: lookup.CardTier || null
 	};
 }
