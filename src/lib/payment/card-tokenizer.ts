@@ -1,12 +1,20 @@
 import crypto from "crypto-js";
 import { CardBrand, CardData, PaymentTokenResult } from "@/types/type";
 import { nanoid } from "nanoid";
+import { getIssuerBankDetails } from "./get-issuerbank";
 
-function generateKey(userId: string, appSecret: string): string {
+export function generateKey(userId: string, appSecret: string): string {
 	return crypto
 		.SHA256(userId + appSecret)
 		.toString(crypto.enc.Hex)
 		.slice(0, 32);
+}
+
+function encryptCardField(value: string, userId: string): string {
+	const key = crypto.enc.Utf8.parse(userId.slice(0, 16)); // simple key (harus matching server)
+	const iv = crypto.lib.WordArray.random(16);
+	const encrypted = crypto.AES.encrypt(value, key, { iv }).toString();
+	return iv.toString(crypto.enc.Hex) + ":" + encrypted;
 }
 
 export function getCardBrand(cardNumber: string): CardBrand  {
@@ -30,29 +38,30 @@ export async function generateToken(
 	userId: string,
 ): Promise<PaymentTokenResult> {
 	const token_id = nanoid();
-	const key = crypto.enc.Utf8.parse(generateKey(userId, process.env.APP_SECRET || ""));
-	const iv = crypto.lib.WordArray.random(16);
 
-	const encrypted = crypto.AES.encrypt(JSON.stringify(card), key, {
-		iv,
-	}).toString();
-	const token = iv.toString(crypto.enc.Hex) + ":" + encrypted;
+	const tokenizedNumber = encryptCardField(card.number, userId);
+    const virtualCVV = crypto
+		.HmacSHA256(card.cvv, userId + process.env.APP_SECRET)
+		.toString();
+
 	const last4 = card.number.slice(-4);
-    const bin = card.number.slice(0, 6)
     const brand = getCardBrand(card.number);
     const lookup = await (
 		await fetch(`https://data.handyapi.com/bin/${card.number.slice(0, 6)}`, {
             headers: { 'x-api-key': process.env.HANDY_API_KEY || '' },
         })
 	).json();
+    const details = getIssuerBankDetails(lookup.Issuer)
+    
 
 	return {
 		token_id,
-		token,
+		token: tokenizedNumber,
+        virtualCVV,
 		masked: `**** ${last4}`,
 		scheme: brand,
 		type: lookup.Type || null,
-		issuer_bank: lookup.Issuer || null,
-        tier: lookup.CardTier || null
+		issuer_bank: details,
+        tier: lookup.CardTier || ""
 	};
 }

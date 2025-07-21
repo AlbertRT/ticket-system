@@ -13,7 +13,7 @@ export async function MakePrimary(id: string) {
     }
 
     if (!id) {
-        throw new Error("missiong required params id.")
+        throw new Error("missing required params id.")
     }
 
     try {

@@ -39,7 +39,6 @@ export function CardInputForm({
 
 	const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const raw = e.target.value.replace(/\D/g, "").slice(0, 19);
-		const formatted = raw.replace(/(.{4})/g, "$1 ").trim();
 		onChange({ ...value, number: raw });
 
 		const result = validateCardNumberByBrand(raw);
@@ -85,8 +84,8 @@ export function CardInputForm({
 								src={`/logo/card/${method
 									.toLowerCase()
 									.replace(" ", "-")}.png`}
-								width={20}
-								height={20}
+								width={25}
+								height={0}
 								alt={brand}
 								key={id}
 							/>
@@ -117,9 +116,9 @@ export function CardInputForm({
 										.replace(" ", "-")}.png`
 						}
 						width={30}
-						height={30}
+						height={0}
 						alt={brand}
-						className="absolute right-[20px] bg-white rounded border p-1 transition-all duration-150 ease-in-out"
+						className="absolute right-[20px] bg-white border rounded transition-all duration-150 ease-in-out"
 					/>
 				</div>
 				{!isCardValid && value.number.length > 0 && (

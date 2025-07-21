@@ -48,6 +48,7 @@ export const getCurrentOrganization = async (user_id: string) => {
 				location: true,
 				url_name: true,
 				created_at: true,
+                is_verified: true
 			},
 		});
 

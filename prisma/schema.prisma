@@ -11,10 +11,6 @@ enum PaymentStatus {
     CANCELLED
 }
 
-enum MerchantType {
-    BANK
-    EWALLET
-}
 
 enum TicketStatus {
     AVAILABLE
@@ -25,7 +21,6 @@ enum TicketStatus {
 enum PaymentCategory {
     DEBIT
     CREDIT
-    BANK_TRANSFER
     VA
     QRIS
     EWALLET
@@ -115,6 +110,7 @@ model Organization {
     created_at  DateTime @default(now())
     userId      String
     url_name    String   @unique
+    is_verified Boolean @default(false)
 
     user            User                @relation("UserOrganizations", fields: [userId], references: [id])
     events          Event[]
@@ -296,12 +292,12 @@ model UserPaymentChannel {
     type          PaymentCategory
     token         String
     design        String          @default("default")
-    card_expired  String?
-    issuer_bank   String?
-    masked_number String?
-    scheme        String?
-    tier          String?
-    logo          String?
+    card_expired  String
+    issuer_bank   String
+    masked_number String
+    scheme        String
+    tier          String
+    logo          String
     isActive      Boolean         @default(true)
     isPrimary     Boolean         @default(false)
     createdAt     DateTime        @default(now())
