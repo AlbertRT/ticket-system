@@ -31,17 +31,29 @@ export async function POST(req: Request) {
 		verification.registrationInfo!;
 
 	// Update credential yang sudah dibuat sebelumnya (saat generate)
-	await prisma.credential.update({
-		where: {
-			id: credential.id,
-		},
-		data: {
-			credentialID: Buffer.from(credentialID).toString("base64"),
-			publicKey: Buffer.from(credentialPublicKey).toString("base64"),
-			counter,
-			transports: "internal",
-		},
-	});
+	await Promise.all([
+		prisma.credential.update({
+			where: {
+				id: credential.id,
+			},
+			data: {
+				credentialID: Buffer.from(credentialID).toString("base64"),
+				publicKey: Buffer.from(credentialPublicKey).toString("base64"),
+				counter,
+				transports: "internal",
+			},
+		}),
+		prisma.notification.create({
+			data: {
+				userId: credential.userId,
+				title: "Biometrik berhasil diaktifkan",
+				description:
+					"Hore! Login sekarang tinggal tempel jari atau liat layar. Gak perlu ketik2 lagi. ✨",
+				detail: "SUCCESS",
+				is_readed: false,
+			},
+		}),
+	]);
 
 	return NextResponse.json({ success: true });
 }

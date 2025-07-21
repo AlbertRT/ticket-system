@@ -1,4 +1,6 @@
-import { User } from "@prisma/client"
+import { $Enums, User } from "@prisma/client"
+import { LucideProps } from "lucide-react"
+import { ForwardRefExoticComponent, RefAttributes } from "react"
 
 export type UserDevice = {
     id: string,
@@ -11,6 +13,18 @@ export type UserDevice = {
     }
 }
 
+export type SidebarMenu = {
+	title: string;
+	items: {
+		label: string;
+		href: string;
+		icon?: ForwardRefExoticComponent<
+			Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+		>;
+	}[];
+	role: string[];
+};
+
 export type UserProfileMenu = {
     id: string,
     header: string,
@@ -19,7 +33,7 @@ export type UserProfileMenu = {
 
 export type ProfileMenuItem = {
     label: string,
-    value: keyof User
+    value: keyof User,
 }
 
 export type OrganizationDetails = {
@@ -30,3 +44,54 @@ export type OrganizationDetails = {
     url_name: string,
     created_at: Date
 }
+
+export type CardData = {
+    number: string,
+    expiry: string,
+    cvv: string
+}
+
+export interface PaymentTokenResult {
+    token_id: string
+    token: string
+    virtualCVV: string
+    masked: string,
+    scheme: CardBrand,
+    type: string | null,
+    issuer_bank: IssuerBankDetails | null,
+    tier: string | null
+}
+
+export type CardBrand =
+	| "Mastercard"
+	| "Visa"
+	| "American Express"
+	| "JCB"
+	| "UnionPay"
+	| "Unknown";
+
+export interface UserPaymentChannel {
+    id: string,
+    type: $Enums.PaymentCategory,
+    design: string
+    isActive: boolean,
+    isPrimary: boolean,
+    card_expired: string | null
+    issuer_bank: string | null
+    masked_number: string | null
+    scheme: string | null
+    tier: string | null
+    logo: string | null
+}
+
+export type IssuerBank = {
+    keywords: string[],
+    details: IssuerBankDetails
+}
+export type IssuerBankDetails = {
+	logo: string | null;
+	company: string;
+	name: string;
+	alt: string;
+	country: string;
+};

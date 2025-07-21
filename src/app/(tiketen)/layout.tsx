@@ -32,18 +32,27 @@ export default async function RootLayout({
 
 
     return (
-        <html lang="en">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        <TopNav />
-        <main className="p-10 w-full">
-            {children}
-            <Toaster position={"top-right"} richColors={true} closeButton />
+		<html lang="en">
+			<body
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+			>
+				<TopNav />
+				<main className="p-10 w-full">
+					{children}
+					<Toaster
+						position={"top-center"}
+						richColors={true}
+						closeButton
+					/>
 
-            {accessToken && <SyncDeviceInfo access_token={accessToken} user_id={userId as string} />}
-        </main>
-        </body>
-        </html>
-    );
+					{accessToken && (
+						<SyncDeviceInfo
+							access_token={accessToken}
+							user_id={userId as string}
+						/>
+					)}
+				</main>
+			</body>
+		</html>
+	);
 }

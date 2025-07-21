@@ -1,14 +1,6 @@
-import { getCurrentDevice } from "@/action/get-device-details";
 import { getUserDetails } from "@/action/get-user-details";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import BiometricVerification from "@/components/User/BiometricVerification";
 import { UserProfileItem } from "@/components/User/UserProfileItem";
 import { USER_PROFILE_MENU } from "@/constatnt/constant";
@@ -19,7 +11,6 @@ import { redirect } from "next/navigation";
 
 export default async function app() {
 	const session = await auth();
-    const current_device = await getCurrentDevice(session?.user.id as string)
 
 	if (!session) {
 		redirect("/");
@@ -36,15 +27,15 @@ export default async function app() {
 	const user = await getUserDetails(session.user.id as string,);
 
 	return (
-		<Card className="w-[90%] h-full">
-			<CardHeader>
-				<CardTitle>Bio Data</CardTitle>
-				<CardDescription>
+		<div className="w-[85%] h-full space-y-6">
+			<div>
+				<h2 className="font-bold text-lg">Bio Data</h2>
+				<p className="text-muted-foreground text-sm">
 					Hai, selamat datang. Di sini Kamu dapat melihat dan
 					mengelola informasi pribadi Kamu!
-				</CardDescription>
-			</CardHeader>
-			<CardContent>
+				</p>
+			</div>
+			<div>
 				{user ? (
 					<div className="grid grid-cols-3 gap-4">
 						<div className="col-span-1">
@@ -52,7 +43,7 @@ export default async function app() {
 								<img
 									src={user.image || "/avatar.png"}
 									alt={user.name as string}
-                                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+									className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
 								/>
 							</div>
 							<div className="mt-5 space-y-3">
@@ -65,11 +56,16 @@ export default async function app() {
 										Ubah Kata Sandi
 									</Link>
 								</Button>
-                                <Button className="w-full justify-between" variant={"outline"}>
-                                    <Lock className="mr-2 h-4 w-4"/>
-                                    <span className=" w-full">PIN</span>
-                                </Button>
-                                <BiometricVerification biometricEnabled={biometricEnabled} />
+								<Button
+									className="w-full justify-between"
+									variant={"outline"}
+								>
+									<Lock className="mr-2 h-4 w-4" />
+									<span className=" w-full">PIN</span>
+								</Button>
+								<BiometricVerification
+									biometricEnabled={biometricEnabled}
+								/>
 							</div>
 						</div>
 						<div className="col-span-2 space-y-5">
@@ -80,9 +76,9 @@ export default async function app() {
 									</h3>
 									<ul className="w-full">
 										{menu.items.map((item, itemIndex) => {
-												user[
-													item.value as keyof typeof user
-												];
+											user[
+												item.value as keyof typeof user
+											];
 
 											return (
 												<UserProfileItem
@@ -92,8 +88,10 @@ export default async function app() {
 															item.value as keyof typeof user
 														]
 													}
-                                                    key={`${menu.id}-${itemIndex}`}
-                                                    emailVerified={user.emailVerified}
+													key={`${menu.id}-${itemIndex}`}
+													emailVerified={
+														user.emailVerified
+													}
 												/>
 											);
 										})}
@@ -105,7 +103,7 @@ export default async function app() {
 				) : (
 					<span>Memuat data user...</span>
 				)}
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	);
 }
