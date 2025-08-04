@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import NotificationMenu from "./notification-menu";
 import { getCurrentUserDeviceAndCredential } from "@/lib/auth/biometric/getCurrentUserDeviceAndCredential";
 import { getCurrentOrganization } from "@/action/get-user-details";
+import UserProfileBtn from "./user-profile-btn";
 
 export default async function TopNav() {
 	const session = await auth();

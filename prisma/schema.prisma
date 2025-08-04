@@ -11,7 +11,6 @@ enum PaymentStatus {
     CANCELLED
 }
 
-
 enum TicketStatus {
     AVAILABLE
     SOLD_OUT
@@ -46,7 +45,6 @@ model User {
     phone_number  String?   @map("nomor_telepon")
     password      String?
     session_token String?
-    user_agent    String?
     created_at    DateTime  @default(now())
 
     accounts         Account[]
@@ -54,7 +52,6 @@ model User {
     organizations    Organization[]       @relation("UserOrganizations")
     notifications    Notification[]
     devices          UserDevice[]
-    bookings         CustomerBooking[]
     paymentHistories PaymentHistory[]
     organizedEvents  Event[]              @relation("EventOrganizer")
     credentials      Credential[]
@@ -110,11 +107,10 @@ model Organization {
     created_at  DateTime @default(now())
     userId      String
     url_name    String   @unique
-    is_verified Boolean @default(false)
+    is_verified Boolean  @default(false)
 
     user            User                @relation("UserOrganizations", fields: [userId], references: [id])
     events          Event[]
-    documents       OrgLegalDocument[]
     paymentChannels OrgPaymentChannel[]
 }
 
@@ -135,24 +131,24 @@ model Event {
     labels         String[]
     created_at     DateTime @default(now())
 
-    organization     Organization      @relation(fields: [organizationId], references: [id])
-    organizer        User              @relation("EventOrganizer", fields: [organizerId], references: [id])
-    promo            PromoCode?        @relation("EventPromo", fields: [promo_id], references: [code])
+    organization     Organization     @relation(fields: [organizationId], references: [id])
+    organizer        User             @relation("EventOrganizer", fields: [organizerId], references: [id])
+    promo            PromoCode?       @relation("EventPromo", fields: [promo_id], references: [id])
     tickets          Ticket[]
     analytics        EventAnalytics?
-    bookings         CustomerBooking[]
     paymentHistories PaymentHistory[]
     invoices         EventInvoice[]
 }
 
 model PromoCode {
-    code                    String   @id
+    id                      String   @id @default(cuid())
+    code                    String
     amount                  Float
     valid_thru              DateTime
     description             String
     max_promo_used_per_user Int
     created_at              DateTime @default(now())
-
+    
     events Event[] @relation("EventPromo")
 }
 
@@ -169,7 +165,6 @@ model Ticket {
     eventId        String
 
     event            Event               @relation(fields: [eventId], references: [id])
-    bookings         CustomerBooking[]
     paymentHistories PaymentHistory[]
     invoices         EventInvoice[]
     paymentChannels  OrgPaymentChannel[] @relation("TicketPaymentChannels")
@@ -191,22 +186,6 @@ model EventAnalytics {
     organizer User  @relation("OrganizerAnalytics", fields: [organizerId], references: [id])
 }
 
-model CustomerBooking {
-    id             String        @id @default(cuid())
-    ticketId       String
-    payment_status PaymentStatus
-    userId         String
-    eventId        String
-    invoiceId      String?
-    created_at     DateTime      @default(now())
-
-    ticket         Ticket           @relation(fields: [ticketId], references: [id])
-    user           User             @relation(fields: [userId], references: [id])
-    event          Event            @relation(fields: [eventId], references: [id])
-    PaymentHistory PaymentHistory[]
-    invoice        EventInvoice?    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-}
-
 model PaymentHistory {
     id                   String        @id @default(cuid())
     ticketId             String
@@ -217,7 +196,6 @@ model PaymentHistory {
     userPaymentChannelId String
 
     ticket            Ticket             @relation(fields: [ticketId], references: [id])
-    booking           CustomerBooking    @relation(fields: [bookingId], references: [id])
     event             Event              @relation(fields: [eventId], references: [id])
     user              User               @relation(fields: [userId], references: [id])
     userPaymentMethod UserPaymentChannel @relation(fields: [userPaymentChannelId], references: [id])
@@ -317,25 +295,13 @@ model OrgPaymentChannel {
     tickets        Ticket[]       @relation("TicketPaymentChannels")
 }
 
-model OrgLegalDocument {
-    id           String   @id @default(cuid())
-    orgId        String
-    url          String
-    type         String
-    is_suspended Boolean  @default(false)
-    uploadedAt   DateTime @default(now())
-
-    organization Organization @relation(fields: [orgId], references: [id])
-}
-
 model EventInvoice {
-    id        String   @id @default(cuid())
+    id        String   @id
     ticketId  String
     eventId   String
     bookingId String
     createdAt DateTime @default(now())
 
-    event   Event             @relation(fields: [eventId], references: [id])
-    ticket  Ticket            @relation(fields: [ticketId], references: [id])
-    booking CustomerBooking[]
+    event  Event  @relation(fields: [eventId], references: [id])
+    ticket Ticket @relation(fields: [ticketId], references: [id])
 }

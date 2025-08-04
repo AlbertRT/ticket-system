@@ -1,4 +1,4 @@
-import { $Enums, User } from "@prisma/client"
+import { $Enums, OrgPaymentChannel, User } from "@prisma/client"
 import { LucideProps } from "lucide-react"
 import { ForwardRefExoticComponent, RefAttributes } from "react"
 
@@ -94,4 +94,16 @@ export type IssuerBankDetails = {
 	name: string;
 	alt: string;
 	country: string;
+};
+
+export type OrgDetails = {
+	id: string;
+	is_verified: boolean;
+	joined_at: Date;
+	location: string;
+	name: string;
+	_count: {
+		events: number;
+	};
+    url_name: string
 };
