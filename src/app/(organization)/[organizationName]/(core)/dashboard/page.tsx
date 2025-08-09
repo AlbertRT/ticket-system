@@ -42,7 +42,7 @@ export default function page() {
 					</AlertDescription>
 				</Alert>
 			)}
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-3 gap-5 mt-4">
                 <DataCard title="Event Aktif" suffix="Event" />
                 <DataCard title="Tiket Terjual" suffix="Tiket" />
                 <DataCard title="Total Pengunjung" suffix="Orang" />

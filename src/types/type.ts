@@ -107,3 +107,15 @@ export type OrgDetails = {
 	};
     url_name: string
 };
+
+export type ImgMetaData = {
+    url_preview: string
+    filename: string
+}
+
+export type KTPVerificationRes = {
+	valid: boolean;
+	nik_valid: boolean;
+	nama_valid: boolean;
+	tanggal_lahir_valid: boolean
+};
