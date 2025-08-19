@@ -25,6 +25,14 @@ enum PaymentCategory {
     EWALLET
 }
 
+enum MemberTier {
+    CLASSIC
+    PLATINUM
+    SIGNATURE
+    INFINTE
+    WORLD_ELITE
+}
+
 generator client {
     provider = "prisma-client-js"
 }
@@ -46,7 +54,9 @@ model User {
     password      String?
     session_token String?
     created_at    DateTime  @default(now())
+    is_member     Boolean   @default(false)
 
+    member           Member?
     accounts         Account[]
     sessions         Session[]
     organizations    Organization[]       @relation("UserOrganizations")
@@ -148,7 +158,7 @@ model PromoCode {
     description             String
     max_promo_used_per_user Int
     created_at              DateTime @default(now())
-    
+
     events Event[] @relation("EventPromo")
 }
 
@@ -304,4 +314,16 @@ model EventInvoice {
 
     event  Event  @relation(fields: [eventId], references: [id])
     ticket Ticket @relation(fields: [ticketId], references: [id])
+}
+
+model Member {
+    id            String     @id
+    member_number String        @unique
+    member_name String
+    points        Int        @default(0)
+    joined_since  DateTime   @default(now())
+    tier          MemberTier @default(CLASSIC)
+    userId        String     @unique
+    referal_code String @unique @default("")
+    user User @relation(fields: [userId], references: [id])
 }

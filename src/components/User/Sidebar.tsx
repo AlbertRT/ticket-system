@@ -1,13 +1,8 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { auth } from "@/auth";
-import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import LogoutButton from "@/components/User/LogoutBtn";
 import { USER_SIDEBAR_MENU } from "@/constatnt/constant";
-import { getCurrentOrganization } from "@/action/get-user-details";
-import SwitchUserButton from "./SwitchUserButton";
-import { OrganizationDetails } from "@/types/type";
-import { getBasePathForRole } from "@/lib/helper/getBasePathForRole";
 import {
 	Dialog,
 	DialogClose,
@@ -18,29 +13,16 @@ import {
 	DialogTrigger,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { LogOut } from "lucide-react";
-import { toast } from "sonner";
+import { ChevronRight, Coins, LogOut } from "lucide-react";
 
-export const UserSidebar = async ({
-	Organization,
-}: {
-	Organization?: OrganizationDetails | undefined;
-}) => {
+export const UserSidebar = async () => {
 	const session = await auth();
-	const currentOrganizer = await getCurrentOrganization(
-		session?.user?.id as string
-	);
 
 	if (!session) {
 		return;
 	}
 
-	const basePath = getBasePathForRole(
-		session.user.role,
-		Organization?.url_name
-	);
 
-	const currentRole = (session?.user.role ?? "USER") as "USER" | "ORGANIZER";
 
 	return (
 		<div className="w-[290px] bg-white p-5 flex flex-col justify-between border-r space-y-6">
@@ -60,6 +42,38 @@ export const UserSidebar = async ({
 					</p>
 				</div>
 			</Link>
+			<Link
+				href={"/user/member"}
+				className="mb-5 w-full rounded-xl border bg-white/60 p-4 shadow-sm 
+        group flex items-center justify-between hover:shadow-md hover:border-blue-300 
+        transition-all duration-200"
+			>
+				{/* Title */}
+				<div>
+					<p className="text-sm font-semibold text-gray-800 group-hover:text-blue-600">
+						Membership
+					</p>
+					<p className="text-xs text-gray-500">
+						Lihat benefit & tier Anda
+					</p>
+				</div>
+
+				{/* Chevron */}
+				<div
+					className="opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 
+        transition-all duration-200 text-gray-400"
+				>
+					<ChevronRight className="w-4 h-4" />
+				</div>
+			</Link>
+
+			{/* Chevron */}
+			<div
+				className="opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 
+        transition-all duration-200 text-gray-400"
+			>
+				<ChevronRight className="w-4 h-4" />
+			</div>
 
 			<div className="flex-1 overflow-y-auto space-y-6">
 				{session?.user?.role &&
@@ -76,7 +90,7 @@ export const UserSidebar = async ({
 								{menu.items.map((item, itemIndex) => (
 									<li key={itemIndex}>
 										<Link
-											href={`${basePath}${item.href}`}
+											href={`/user${item.href}`}
 											className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
 										>
 											{item.icon && (
@@ -92,16 +106,6 @@ export const UserSidebar = async ({
 			</div>
 
 			<div className="space-y-4">
-				{currentOrganizer && (
-					<>
-						<SwitchUserButton
-							role={currentRole}
-							userId={session.user.id as string}
-						/>
-						<Separator />
-					</>
-				)}
-
 				<Dialog>
 					<DialogTrigger asChild>
 						<Button

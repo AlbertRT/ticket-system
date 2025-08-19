@@ -148,7 +148,7 @@ export default function BankCard({
 							value={
 								channel.logo ? (
 									<Image
-										src={`/logo/bank/${channel.logo}`}
+										src={`/logo/bank/${channel.logo}.png`}
 										alt={channel.issuer_bank as string}
 										width={64}
 										height={20}

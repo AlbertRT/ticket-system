@@ -246,4 +246,14 @@ export const ISSUER_BANK: IssuerBank[] = [
 			country: "Indonesia",
 		},
 	},
+	{
+		keywords: ["PT BANK UOB INDONESIA", "UOB"],
+		details: {
+			logo: "uob.png",
+			company: "PT Bank UOB Indonesia",
+			name: "UOB",
+			alt: "United Overseas Bank",
+			country: "Indonesia",
+		},
+	},
 ];

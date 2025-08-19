@@ -4,6 +4,7 @@ import {UserSidebar} from "@/components/User/Sidebar";
 import { auth } from "@/auth";
 import { getCurrentOrganization } from "@/action/get-user-details";
 import { OrganizationDetails } from "@/types/type";
+import { SessionProvider } from "next-auth/react";
 
 
 export const metadata: Metadata = {
@@ -18,14 +19,11 @@ export default async function RootLayout({
 }>) {
 
     const session = await auth()
-    const currentOrganizer = await getCurrentOrganization(
-        session?.user?.id as string
-    );
 
     return (
-        <div className="max-w-7xl mx-auto flex gap-5">
-            <UserSidebar Organization={currentOrganizer as OrganizationDetails}  />
-            {children}
-        </div>
-    );
+		<div className="max-w-7xl mx-auto flex gap-5">
+			<UserSidebar />
+			<SessionProvider>{children}</SessionProvider>
+		</div>
+	);
 }

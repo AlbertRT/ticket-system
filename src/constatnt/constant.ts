@@ -1,4 +1,4 @@
-import { SidebarMenu, UserProfileMenu } from "@/types/type";
+import { MembershipRules, SidebarMenu, UserProfileMenu } from "@/types/type";
 import { Bell, Cog, CreditCard, icons, Receipt, Shield } from "lucide-react";
 
 export const USER_SIDEBAR_MENU: SidebarMenu[] = [
@@ -121,3 +121,47 @@ export const USER_PROFILE_MENU: UserProfileMenu[] = [
 export const ACCECPTED_PAYMENT_CARD = [
     "AMERICAN EXPRESS", "JCB", "VISA", "MASTERCARD","UNIONPAY"
 ]
+
+export const POINTS_RULES: MembershipRules[] = [
+	{
+		tier: "CLASSIC",
+		earningRate: 50000,
+		redeemRate: 100,
+		minPoints: 0,
+		maxPoints: 2499,
+        nextTier: "PLATINUM",
+        welcomeBonus: 500
+	},
+	{
+		tier: "PLATINUM",
+		earningRate: 30000,
+		redeemRate: 100,
+		minPoints: 2500,
+		maxPoints: 9999,
+        nextTier: "SIGNATURE"
+	},
+	{
+		tier: "SIGNATURE",
+		earningRate: 20000,
+		redeemRate: 100,
+		minPoints: 10000,
+		maxPoints: 24999,
+        nextTier: "INFINITE"
+	},
+	{
+		tier: "INFINITE",
+		earningRate: 10000,
+		redeemRate: 100,
+		minPoints: 25000,
+		maxPoints: 49999,
+        nextTier: "WORLD ELITE"
+	},
+	{
+		tier: "WORLD ELITE",
+		earningRate: 7500,
+		redeemRate: 100,
+		minPoints: 50000,
+		maxPoints: null,
+        nextTier: ""
+	},
+];

@@ -119,3 +119,15 @@ export type KTPVerificationRes = {
 	nama_valid: boolean;
 	tanggal_lahir_valid: boolean
 };
+
+export type MembershipRules = {
+    tier: MembershipTier
+    earningRate: number
+    redeemRate: number
+    minPoints: number
+    maxPoints: number | null
+    nextTier?: MembershipTier | string
+    welcomeBonus?: number
+}
+
+export type MembershipTier = "CLASSIC" | "PLATINUM" | "SIGNATURE" | "INFINITE" | "WORLD ELITE"
