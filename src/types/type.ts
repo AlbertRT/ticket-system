@@ -60,6 +60,7 @@ export interface PaymentTokenResult {
     type: string | null,
     issuer_bank: IssuerBankDetails | null,
     tier: string | null
+    logo: string
 }
 
 export type CardBrand =

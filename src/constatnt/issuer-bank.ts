@@ -9,19 +9,19 @@ export const ISSUER_BANK: IssuerBank[] = [
 		],
 		details: {
 			logo: null,
-			company: "PT Bank Central Asia Tbk",
-			name: "BCA",
-			alt: "Bank Central Asia",
+			company: "PT AEON Credit Service Indonesia",
+			name: "AEON Bank",
+			alt: "AEON Bank Indonesia",
 			country: "Indonesia",
 		},
 	},
 	{
 		keywords: ["BCA", "BANK CENTRAL ASIA", "PT BANK CENTRAL ASIA TBK"],
 		details: {
-			logo: "bca.png",
-			company: "PT AEON Credit Service Indonesia",
-			name: "AEON Bank",
-			alt: "AEON Bank Indonesia",
+			logo: null,
+			company: "PT Bank Central Asia Tbk",
+			name: "BCA",
+			alt: "Bank Central Asia",
 			country: "Indonesia",
 		},
 	},
@@ -256,4 +256,74 @@ export const ISSUER_BANK: IssuerBank[] = [
 			country: "Indonesia",
 		},
 	},
+	{
+		keywords: ["PT BANK DIGITAL BCA", "BCA DIGITAL", "blu by BCA"],
+		details: {
+			logo: "blu.png",
+			company: "PT Bank Digital BCA",
+			name: "blu",
+			alt: "blu by BCA",
+			country: "Indonesia",
+		},
+	},
+	{
+		keywords: ["PT BANK JAGO TBK", "BANK JAGO"],
+		details: {
+			logo: null,
+			company: "PT Bank Jago Tbk",
+			name: "Jago",
+			alt: "Bank Jago",
+			country: "Indonesia",
+		},
+	},
+	{
+		keywords: ["PT BANK J TRUST INDONESIA TBK"],
+		details: {
+			logo: null,
+			company: "PT Bank J Trust Indonesia Tbk",
+			name: "J Trust",
+			alt: "J Trust Bank",
+			country: "Indonesia",
+		},
+	},
+	{
+		keywords: ["PT BANK KEB HANA INDONESIA"],
+		details: {
+			logo: null,
+			company: "PT Bank KEB Hana Indonesia",
+			name: "KEB Hana",
+			alt: "KEB Hana Bank",
+			country: "Indonesia",
+		},
+	},
+	{
+		keywords: ["PT BANK MUAMALAT INDONESIA TBK"],
+		details: {
+			logo: null,
+			company: "PT Bank Muamalat Indonesia Tbk",
+			name: "Bank Muamalat",
+			alt: "Bank Muamalat",
+			country: "Indonesia",
+		},
+	},
+	{
+		keywords: ["PT. HONEST FINANCIAL TECHNOLOGIES"],
+        details: {
+            logo: null,
+            company: "PT Honest Financial Technologies",
+            name: "Honest",
+            alt: "Honest Financial",
+            country: "Indonesia"
+        }
+	},
+    {
+        keywords: ["PT BANK DBS INDONESIA"],
+        details: {
+            logo: "dbs.png",
+            company: "PT Bank DBS Indonesia",
+            name: "DBS",
+            alt: "Development Bank of Singapore",
+            country: "Indonesia"
+        }
+    }
 ];

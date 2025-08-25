@@ -59,6 +59,7 @@ export default function CardSection() {
 					issuer_bank: cardData.issuer_bank?.name,
 					tier: cardData.tier,
 					expires: form.expiry,
+                    logo: cardData.logo
 				}),
 			});
 

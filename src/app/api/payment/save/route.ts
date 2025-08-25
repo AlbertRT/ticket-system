@@ -5,7 +5,7 @@ import crypto from "crypto-js";
 import { generateKey } from "@/lib/payment/card-tokenizer";
 
 export async function POST(req: Request) {
-    const { token_id, token, masked, scheme, type, issuer_bank, expires, tier, virtualCVV } = await req.json();
+    const { token_id, token, masked, scheme, type, issuer_bank, expires, tier, virtualCVV, logo } = await req.json();
     const session = await auth()
 
     console.log(token_id, token, masked, scheme, type, issuer_bank, expires, tier, virtualCVV)
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 					isPrimary: false,
                     tier,
 					card_expired: expires,
-                    logo: issuer_bank
+                    logo
 				},
 			}),
 			prisma.notification.create({

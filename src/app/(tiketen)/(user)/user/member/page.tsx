@@ -1,4 +1,3 @@
-// app/member/page.tsx
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import MemberDashboard from "@/components/User/Member/MemberDashboard";

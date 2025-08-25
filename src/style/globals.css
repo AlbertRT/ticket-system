@@ -136,4 +136,29 @@
   .world-elite {
     @apply bg-gradient-to-r from-black via-gray-900 to-yellow-400 text-white;
   }
+  .card-vertical {
+    @apply relative w-[210] h-[320px] rounded-xl text-white p-5 
+           flex flex-col justify-between;
+  }
+  .card-vertical::after {
+    content: "";
+    @apply absolute bottom-0 left-1/2 w-[48px] h-[40px] rounded-full;
+    background: theme("colors.white"); /* warna bg modal/parent */
+    transform: translateX(-0%) translateY(70%);
+  }
+  .card-visa {
+    @apply bg-[#2563eb]
+  }
+  .card-mastercard {
+    @apply bg-[#d31313]
+  }
+  .card-jcb {
+    @apply bg-[#16a34a]
+  }
+  .card-american-express {
+    @apply bg-[#0ea5e9]
+  }
+  .card-unionpay {
+    @apply bg-[#be123c]
+  }
 }

@@ -118,9 +118,22 @@ export const USER_PROFILE_MENU: UserProfileMenu[] = [
     },
 ]
 
-export const ACCECPTED_PAYMENT_CARD = [
-    "AMERICAN EXPRESS", "JCB", "VISA", "MASTERCARD","UNIONPAY"
-]
+export const ACCECPTED_PAYMENT_CARD = [{
+    company: "American Express",
+    logo: "american-express.png"
+}, {
+    company: "Visa",
+    logo: "visa-original.png"
+}, {
+    company: "Mastercard",
+    logo: "mastercard.png"
+}, {
+    company: "JCB",
+    logo: "jcb.png"
+}, {
+    company: "Union Pay",
+    logo: "unionpay.png"
+}]
 
 export const POINTS_RULES: MembershipRules[] = [
 	{

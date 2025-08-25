@@ -7,17 +7,12 @@ import { QuickLogin } from "@/components/ui/quick-login";
 import { cookies } from "next/headers";
 import NotificationMenu from "./notification-menu";
 import { getCurrentUserDeviceAndCredential } from "@/lib/auth/biometric/getCurrentUserDeviceAndCredential";
-import { getCurrentOrganization } from "@/action/get-user-details";
-import UserProfileBtn from "./user-profile-btn";
 
 export default async function TopNav() {
 	const session = await auth();
 	const cookieStore = await cookies();
 	const device_token = cookieStore.get("device_token")?.value;
 	let credential = false;
-	const currentOrganizer = await getCurrentOrganization(
-		session?.user?.id as string
-	);
 
 	try {
 		const result = await getCurrentUserDeviceAndCredential(device_token);
@@ -34,23 +29,12 @@ export default async function TopNav() {
 				</Link>
 				<div className="flex items-center">
 					<div className="flex items-center space-x-3">
-						{!currentOrganizer ? (
-							<Button asChild variant="ghost" className="group">
-								<Link href="/organization/get-started">
-									<span>Buat Event Pertama mu!</span>
-									<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
-								</Link>
-							</Button>
-						) : (
-							<Button asChild variant="ghost" className="group">
-								<Link
-									href={`/${currentOrganizer.url_name}/dashboard`}
-								>
-									<span>{currentOrganizer.name}</span>
-									<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
-								</Link>
-							</Button>
-						)}
+						<Button asChild variant="ghost" className="group">
+							<Link href="#">
+								<span>Buat Event Pertama mu!</span>
+								<ChevronRight className="transition-transform group-hover:translate-x-0.5" />
+							</Link>
+						</Button>
 						{!session ? (
 							<>
 								<Button asChild variant={"outline"}>
