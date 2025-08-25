@@ -43,7 +43,6 @@ export default function CardSection() {
 				form,
 				session?.user.id || "anonymous"
 			);
-            console.log(cardData)
 
 			if (!cardData) throw new Error("Token gagal dibuat.");
 
@@ -58,15 +57,14 @@ export default function CardSection() {
 					type: cardData.type,
 					masked: cardData.masked,
 					issuer_bank: cardData.issuer_bank?.name,
-					logo: cardData.issuer_bank?.logo,
 					tier: cardData.tier,
 					expires: form.expiry,
+                    logo: cardData.logo
 				}),
 			});
 
 			if (!res.ok) {
 				const { msg } = await res.json();
-                console.log(msg)
 				setForm({ number: "", expiry: "", cvv: "" });
 				toast.error("Gagal menyimpan kartu.", { description: msg });
 				return;

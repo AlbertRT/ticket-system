@@ -1,5 +1,3 @@
-// lib/auth/biometric/getCurrentUserDeviceAndCredential.ts
-
 import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -31,9 +29,32 @@ export const getCurrentUserDeviceAndCredential = async (
 			deviceId: device.id,
 			...(userId ? { userId } : {}),
 		},
+        select: {
+            id: true,
+            is_active: true,
+            createdAt: true,
+            userId: true,
+            deviceId: true,
+            challenge: true
+        }
 	});
+
+    const pin = await prisma.pinBlocks.findFirst({ where: { userId: session?.user.id }, select: { createdAt: true, userId: true, is_active: true } })
 
 	if (!credential) throw new Error("Credential not found");
 
-	return { device, credential, session };
+    const def_verification = await prisma.user.findFirst({ where: { id: userId as string } })
+
+	return {
+		device,
+		credential: {
+			...credential,
+			is_default: def_verification?.default_verification === "BIOMETRIC",
+		},
+		session,
+		pin: {
+            ...pin,
+            is_default: def_verification?.default_verification === "PIN"
+        },
+	};
 };

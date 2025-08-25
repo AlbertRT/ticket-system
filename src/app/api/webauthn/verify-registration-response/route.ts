@@ -31,6 +31,20 @@ export async function POST(req: Request) {
 		verification.registrationInfo!;
 
 	// Update credential yang sudah dibuat sebelumnya (saat generate)
+
+    const defaultVerification = await prisma.user.findFirst({ where: { id: credential.userId, default_verification: null } })
+
+    if (defaultVerification) {
+        await prisma.user.update({
+            where: {
+                id: credential.userId
+            },
+            data: {
+                default_verification: "BIOMETRIC"
+            }
+        })
+    }
+
 	await Promise.all([
 		prisma.credential.update({
 			where: {

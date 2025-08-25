@@ -11,19 +11,25 @@ enum PaymentStatus {
     CANCELLED
 }
 
-
-enum TicketStatus {
-    AVAILABLE
-    SOLD_OUT
-    INACTIVE
-}
-
 enum PaymentCategory {
     DEBIT
     CREDIT
     VA
     QRIS
     EWALLET
+}
+
+enum MemberTier {
+    CLASSIC
+    PLATINUM
+    SIGNATURE
+    INFINTE
+    WORLD_ELITE
+}
+
+enum UserDefaultVerificationMethod {
+    BIOMETRIC
+    PIN
 }
 
 generator client {
@@ -36,30 +42,28 @@ datasource db {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime? @map("email_verified")
-    image         String?
-    role          Role      @default(USER)
-    date_of_birth DateTime? @map("tanggal_lahir")
-    phone_number  String?   @map("nomor_telepon")
-    password      String?
-    session_token String?
-    user_agent    String?
-    created_at    DateTime  @default(now())
+    id                   String                         @id @default(cuid())
+    name                 String?
+    email                String?                        @unique
+    emailVerified        DateTime?                      @map("email_verified")
+    image                String?
+    role                 Role                           @default(USER)
+    date_of_birth        DateTime?                      @map("tanggal_lahir")
+    phone_number         String?                        @map("nomor_telepon")
+    password             String?
+    session_token        String?
+    created_at           DateTime                       @default(now())
+    is_member            Boolean                        @default(false)
+    default_verification UserDefaultVerificationMethod?
 
+    member           Member?
     accounts         Account[]
     sessions         Session[]
-    organizations    Organization[]       @relation("UserOrganizations")
-    notifications    Notification[]
     devices          UserDevice[]
-    bookings         CustomerBooking[]
     paymentHistories PaymentHistory[]
-    organizedEvents  Event[]              @relation("EventOrganizer")
     credentials      Credential[]
-    eventAnalytics   EventAnalytics[]     @relation("OrganizerAnalytics")
     paymentChannels  UserPaymentChannel[]
+    pin              PinBlocks?
 }
 
 model Account {
@@ -101,112 +105,6 @@ model VerificationToken {
     @@map("verification_tokens")
 }
 
-model Organization {
-    id          String   @id @default(cuid())
-    name        String
-    description String
-    location    String
-    joined_at   DateTime
-    created_at  DateTime @default(now())
-    userId      String
-    url_name    String   @unique
-    is_verified Boolean @default(false)
-
-    user            User                @relation("UserOrganizations", fields: [userId], references: [id])
-    events          Event[]
-    documents       OrgLegalDocument[]
-    paymentChannels OrgPaymentChannel[]
-}
-
-model Event {
-    id             String   @id @default(cuid())
-    organizationId String
-    name           String
-    description    String
-    capacity       Int
-    organizerId    String
-    started_at     DateTime
-    ended_at       DateTime
-    promo_id       String?
-    is_fullybooked Boolean
-    max_capacity   Int
-    ticket_count   Int
-    is_promo       Boolean
-    labels         String[]
-    created_at     DateTime @default(now())
-
-    organization     Organization      @relation(fields: [organizationId], references: [id])
-    organizer        User              @relation("EventOrganizer", fields: [organizerId], references: [id])
-    promo            PromoCode?        @relation("EventPromo", fields: [promo_id], references: [code])
-    tickets          Ticket[]
-    analytics        EventAnalytics?
-    bookings         CustomerBooking[]
-    paymentHistories PaymentHistory[]
-    invoices         EventInvoice[]
-}
-
-model PromoCode {
-    code                    String   @id
-    amount                  Float
-    valid_thru              DateTime
-    description             String
-    max_promo_used_per_user Int
-    created_at              DateTime @default(now())
-
-    events Event[] @relation("EventPromo")
-}
-
-model Ticket {
-    id             String       @id @default(cuid())
-    name           String
-    description    String
-    price          Float
-    total_price    Float
-    sales_start_at DateTime
-    sales_ended_at DateTime
-    status         TicketStatus
-    created_at     DateTime     @default(now())
-    eventId        String
-
-    event            Event               @relation(fields: [eventId], references: [id])
-    bookings         CustomerBooking[]
-    paymentHistories PaymentHistory[]
-    invoices         EventInvoice[]
-    paymentChannels  OrgPaymentChannel[] @relation("TicketPaymentChannels")
-}
-
-model EventAnalytics {
-    id                 String   @id @default(cuid())
-    total_event        String
-    ticket_sold        Int
-    revenue_per_ticket Float
-    total_revenue      Float
-    tickets_made       Int
-    customers_total    Int
-    created_at         DateTime @default(now())
-    eventId            String   @unique
-    organizerId        String
-
-    event     Event @relation(fields: [eventId], references: [id])
-    organizer User  @relation("OrganizerAnalytics", fields: [organizerId], references: [id])
-}
-
-model CustomerBooking {
-    id             String        @id @default(cuid())
-    ticketId       String
-    payment_status PaymentStatus
-    userId         String
-    eventId        String
-    invoiceId      String?
-    created_at     DateTime      @default(now())
-
-    ticket         Ticket           @relation(fields: [ticketId], references: [id])
-    user           User             @relation(fields: [userId], references: [id])
-    event          Event            @relation(fields: [eventId], references: [id])
-    PaymentHistory PaymentHistory[]
-    invoice        EventInvoice?    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-}
-
 model PaymentHistory {
     id                   String        @id @default(cuid())
     ticketId             String
@@ -215,10 +113,6 @@ model PaymentHistory {
     payment_status       PaymentStatus
     userId               String
     userPaymentChannelId String
-
-    ticket            Ticket             @relation(fields: [ticketId], references: [id])
-    booking           CustomerBooking    @relation(fields: [bookingId], references: [id])
-    event             Event              @relation(fields: [eventId], references: [id])
     user              User               @relation(fields: [userId], references: [id])
     userPaymentMethod UserPaymentChannel @relation(fields: [userPaymentChannelId], references: [id])
 }
@@ -238,18 +132,6 @@ model UserDevice {
     Credential Credential[]
 }
 
-model Notification {
-    id          String   @id @default(cuid())
-    title       String
-    description String
-    detail      String?
-    userId      String
-    is_readed   Boolean
-    created_at  DateTime @default(now())
-
-    user User @relation(fields: [userId], references: [id])
-}
-
 model Credential {
     id           String      @id @default(cuid())
     user         User        @relation(fields: [userId], references: [id])
@@ -266,23 +148,14 @@ model Credential {
     createdAt    DateTime    @default(now())
 }
 
-model Media {
-    id        String   @id @default(cuid())
-    name      String
-    type      String
-    size      Int
-    url       String
-    eventId   String?
-    createdAt DateTime @default(now())
-}
-
-model PaymentChannel {
-    id        String          @id @default(cuid())
-    name      String
-    type      PaymentCategory
-    createdAt DateTime        @default(now())
-
-    orgChannels OrgPaymentChannel[]
+model PinBlocks {
+    id         String   @id @default(cuid())
+    blocks     String
+    userId     String   @unique
+    is_active  Boolean
+    createdAt  DateTime @default(now())
+    modifiedAt DateTime
+    user       User     @relation(fields: [userId], references: [id])
 }
 
 model UserPaymentChannel {
@@ -306,36 +179,14 @@ model UserPaymentChannel {
     paymentHistories PaymentHistory[]
 }
 
-model OrgPaymentChannel {
-    id               String   @id @default(cuid())
-    organizationId   String
-    paymentChannelId String
-    createdAt        DateTime @default(now())
-
-    organization   Organization   @relation(fields: [organizationId], references: [id])
-    paymentChannel PaymentChannel @relation(fields: [paymentChannelId], references: [id])
-    tickets        Ticket[]       @relation("TicketPaymentChannels")
-}
-
-model OrgLegalDocument {
-    id           String   @id @default(cuid())
-    orgId        String
-    url          String
-    type         String
-    is_suspended Boolean  @default(false)
-    uploadedAt   DateTime @default(now())
-
-    organization Organization @relation(fields: [orgId], references: [id])
-}
-
-model EventInvoice {
-    id        String   @id @default(cuid())
-    ticketId  String
-    eventId   String
-    bookingId String
-    createdAt DateTime @default(now())
-
-    event   Event             @relation(fields: [eventId], references: [id])
-    ticket  Ticket            @relation(fields: [ticketId], references: [id])
-    booking CustomerBooking[]
+model Member {
+    id            String     @id
+    member_number String     @unique
+    member_name   String
+    points        Int        @default(0)
+    joined_since  DateTime   @default(now())
+    tier          MemberTier @default(CLASSIC)
+    userId        String     @unique
+    referal_code  String     @unique @default("")
+    user          User       @relation(fields: [userId], references: [id])
 }

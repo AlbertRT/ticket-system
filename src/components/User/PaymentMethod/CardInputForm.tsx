@@ -81,11 +81,10 @@ export function CardInputForm({
 					<div className="flex items-center gap-2">
 						{ACCECPTED_PAYMENT_CARD.map((method, id) => (
 							<Image
-								src={`/logo/card/${method
-									.toLowerCase()
-									.replace(" ", "-")}.png`}
-								width={25}
+								src={`/logo/card/${method.logo}`}
+								width={256}
 								height={0}
+								className="w-[25px]"
 								alt={brand}
 								key={id}
 							/>

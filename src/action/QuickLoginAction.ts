@@ -14,6 +14,7 @@ export const GetDevice = async (
 		const result = await prisma.userDevice.findFirst({
 			where: {
 				device_token,
+                is_active: true
 			},
 			include: {
 				user: {
@@ -45,26 +46,3 @@ export const GetDevice = async (
 		return null;
 	}
 };
-
-// export const QuickLogin = async (device_token: string, user_id: string) => {
-//     if (!device_token || !user_id) return false
-//
-//     try {
-//         const device = await prisma.userDevice.findFirst({
-//             where: { device_token: device_token, user_id: user_id }
-//         })
-//         if (!device) return false
-//
-//         await prisma.userDevice.update({
-//             where: {
-//                 device_token,
-//                 userId: user_id
-//             },
-//             data: {
-//                 last_used_at: new Date()
-//             }
-//         })
-//
-//         const sessionToken = signJWT
-//     }
-// }

@@ -47,7 +47,7 @@ export async function generateToken(
 	const last4 = card.number.slice(-4);
     const brand = getCardBrand(card.number);
     const lookup = await (
-		await fetch(`https://data.handyapi.com/bin/${card.number.slice(0, 6)}`, {
+		await fetch(`https://data.handyapi.com/bin/${card.number.slice(0, 8)}`, {
             headers: { 'x-api-key': process.env.HANDY_API_KEY || '' },
         })
 	).json();
@@ -62,6 +62,7 @@ export async function generateToken(
 		scheme: brand,
 		type: lookup.Type || null,
 		issuer_bank: details,
-        tier: lookup.CardTier || ""
+        tier: lookup.CardTier || "",
+        logo: details?.logo ? details.logo : ""
 	};
 }

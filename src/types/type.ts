@@ -1,4 +1,4 @@
-import { $Enums, User } from "@prisma/client"
+import { $Enums, OrgPaymentChannel, User } from "@prisma/client"
 import { LucideProps } from "lucide-react"
 import { ForwardRefExoticComponent, RefAttributes } from "react"
 
@@ -60,6 +60,7 @@ export interface PaymentTokenResult {
     type: string | null,
     issuer_bank: IssuerBankDetails | null,
     tier: string | null
+    logo: string
 }
 
 export type CardBrand =
@@ -95,3 +96,39 @@ export type IssuerBankDetails = {
 	alt: string;
 	country: string;
 };
+
+export type OrgDetails = {
+	id: string;
+	is_verified: boolean;
+	joined_at: Date;
+	location: string;
+	name: string;
+	_count: {
+		events: number;
+	};
+    url_name: string
+};
+
+export type ImgMetaData = {
+    url_preview: string
+    filename: string
+}
+
+export type KTPVerificationRes = {
+	valid: boolean;
+	nik_valid: boolean;
+	nama_valid: boolean;
+	tanggal_lahir_valid: boolean
+};
+
+export type MembershipRules = {
+    tier: MembershipTier
+    earningRate: number
+    redeemRate: number
+    minPoints: number
+    maxPoints: number | null
+    nextTier?: MembershipTier | string
+    welcomeBonus?: number
+}
+
+export type MembershipTier = "CLASSIC" | "PLATINUM" | "SIGNATURE" | "INFINITE" | "WORLD ELITE"
